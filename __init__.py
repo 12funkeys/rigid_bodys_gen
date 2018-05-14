@@ -1,22 +1,17 @@
-import bpy, selection_utils
+import bpy
 from bpy.props import *
-from bpy.types import (Panel,
-                       Operator,
-                       PropertyGroup,
-                       )
-#selection = bpy.selection
 
 bl_info = {
     "name": "rigid bodys gen",
     "author": "12funkeys",
-    "version": (0, 89),
+    "version": (0, 87),
     "blender": (2, 74, 0),
     "location": "pose > selected bones",
     "description": "Set rigid body and constraint easily",
     "warning": "",
     "support": "COMMUNITY",
     "wiki_url": "",
-    "tracker_url": "https://github.com/12funkeys/rigid_bodys_gen",
+    "tracker_url": "",
     "category": "Rigging"
 }
 
@@ -56,8 +51,45 @@ types = [('MOTOR', 'Motor', 'Motor'),
             ('GENERIC_SPRING', 'Generic Spring', 'Generic Spring'),
             ('GENERIC', 'Generic', 'Generic')]
 
+### add Tool Panel
+class MenuRigidBodyTools(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'TOOLS'
+    bl_category = "Rigid Body Gen"
+    bl_context = "posemode"
+    bl_label = "Make Rigid Body Tools"
+
+
+    @classmethod
+    def poll(cls, context):
+        return (context.object is not None)
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
+        col.operator(CreateRigidBodysOnBones.bl_idname, text=bpy.app.translations.pgettext("Add Passive(on bones)"), icon='BONE_DATA')
+        col.operator(CreateRigidBodysPhysics.bl_idname, text=bpy.app.translations.pgettext("Add Active"), icon='PHYSICS')
+        col.operator(CreateRigidBodysJoints.bl_idname, text=bpy.app.translations.pgettext("Add Joints"), icon='CONSTRAINT_DATA')
+        col.operator(CreateRigidBodysPhysicsJoints.bl_idname, text=bpy.app.translations.pgettext("Add Active & Joints"), icon='MOD_PHYSICS')
+
+
+### add MainMenu
+class MenuRigidBodys(bpy.types.Menu):
+    bl_idname = "menu.create_rigidbodys"
+    bl_label = "Make Rigid Bodys"
+    bl_description = "make rigibodys & constraint"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.operator(CreateRigidBodysOnBones.bl_idname, icon='BONE_DATA')
+        layout.operator(CreateRigidBodysPhysics.bl_idname, icon='PHYSICS')
+        layout.operator(CreateRigidBodysJoints.bl_idname, icon='CONSTRAINT_DATA')
+        layout.operator(CreateRigidBodysPhysicsJoints.bl_idname, icon='MOD_PHYSICS')
+
+
 ### user prop
-class UProp(PropertyGroup):
+class UProp:
 
         rb_shape = EnumProperty(
             name='Shape',
@@ -301,11 +333,6 @@ class UProp(PropertyGroup):
             name='Auto Constraint Object',
             description='Constraint Object',
             default=True)
-        
-        jo_reverse = BoolProperty(
-            name='Add Reverse Joint',
-            description='Add Reverse Joint',
-            default=False)
 
         rc_rootbody_passive = BoolProperty(
             name='Passive',
@@ -326,51 +353,6 @@ class UProp(PropertyGroup):
             name='Parent to armature',
             description='Parent to armature',
             default=True)
-
-
-#myProp = None
-
-### add Tool Panel
-class MenuRigidBodyTools(bpy.types.Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'TOOLS'
-    bl_category = "Rigid Body Gen"
-    bl_context = "posemode"
-    bl_label = "Make Rigid Body Tools"
-
-    @classmethod
-    def poll(cls, context):
-        return (context.object is not None)
-
-    def draw(self, context):
-        
-        global myProp
-        
-        layout = self.layout
-        scene = context.scene
-        myProp = scene.my_tool
-
-        col = layout.column(align=True)
-        col.operator(CreateRigidBodysOnBones.bl_idname, text=bpy.app.translations.pgettext("Add Passive(on bones)"), icon='BONE_DATA')
-        col.operator(CreateRigidBodysPhysics.bl_idname, text=bpy.app.translations.pgettext("Add Active"), icon='PHYSICS')
-        col.operator(CreateRigidBodysJoints.bl_idname, text=bpy.app.translations.pgettext("Add Joints"), icon='CONSTRAINT_DATA')
-        col.operator(CreateRigidBodysPhysicsJoints.bl_idname, text=bpy.app.translations.pgettext("Add Active & Joints"), icon='MOD_PHYSICS')
-
-        layout.prop(myProp, 'jo_reverse')
-
-
-### add MainMenu
-class MenuRigidBodys(bpy.types.Menu):
-    bl_idname = "menu.create_rigidbodys"
-    bl_label = "Make Rigid Bodys"
-    bl_description = "make rigibodys & constraint"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.operator(CreateRigidBodysOnBones.bl_idname, icon='BONE_DATA')
-        layout.operator(CreateRigidBodysPhysics.bl_idname, icon='PHYSICS')
-        layout.operator(CreateRigidBodysJoints.bl_idname, icon='CONSTRAINT_DATA')
-        layout.operator(CreateRigidBodysPhysicsJoints.bl_idname, icon='MOD_PHYSICS')
 
 
 ### Create Rigid Bodys On Bones
@@ -1008,15 +990,12 @@ class CreateRigidBodysPhysicsJoints(bpy.types.Operator):
     joint_spring_damping_y = UProp.jo_spring_damping_y
     joint_spring_damping_z = UProp.jo_spring_damping_z
     joint_constraint_object = UProp.jo_constraint_object
-    joint_reverse = UProp.jo_reverse
 
 
     def __init__(self):
         
-        global myProp
         self.p_rb_dim = (1, 1, 1)
         self.joint_dim = (1, 1, 1)
-        self.joint_reverse = myProp.jo_reverse
 
     def draw(self, context):
 
@@ -1044,7 +1023,6 @@ class CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         box = layout.box()
         box.prop(self, 'joint_type')
         box.prop(self, 'joint_constraint_object')
-        box.prop(self, 'joint_reverse')
         box.prop(self, 'p_rb_add_pole_rootbody')
         box.prop(self, 'p_rb_parent_armature')
         box.prop(self, 'joint_dim')
@@ -1401,18 +1379,6 @@ class CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.ops.object.editmode_toggle()
             bpy.context.active_bone.parent = None
             bpy.ops.object.posemode_toggle()
-            
-            ###set reverce joint
-            if self.joint_reverse:
-                bpy.ops.object.mode_set(mode = 'OBJECT')
-                rc.select = False
-                jc.select = True
-                bpy.ops.object.duplicate()
-                jc2 = bpy.context.selected_objects[0]
-                jc2.name = "re_" + jc.name
-                jc2.rigid_body_constraint.object1 = bpy.data.objects[jc.rigid_body_constraint.object2.name]
-                jc2.rigid_body_constraint.object2 = bpy.data.objects[jc.rigid_body_constraint.object1.name]
-                bpy.ops.object.mode_set(mode = 'POSE')
 
         ###clear object select
         bpy.context.scene.objects.active = ob
@@ -1458,7 +1424,6 @@ def register():
     bpy.utils.register_module(__name__)
     #bpy.utils.register_class(MenuRigidBodyTools)
     bpy.types.VIEW3D_MT_pose.append(menu_fn)
-    bpy.types.Scene.my_tool = PointerProperty(type=UProp)
     bpy.app.translations.register(__name__, translation_dict)
     print("rigid_bodys_gen enabled")
 
@@ -1467,7 +1432,6 @@ def register():
 def unregister():
     bpy.app.translations.unregister(__name__)
     bpy.types.VIEW3D_MT_pose.remove(menu_fn)
-    del bpy.types.Scene.my_tool
     #bpy.utils.unregister_class(MenuRigidBodyTools)
     bpy.utils.unregister_module(__name__)
     print("rigid_bodys_gen disable")
