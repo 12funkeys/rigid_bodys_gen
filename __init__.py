@@ -4,8 +4,8 @@ from bpy.props import *
 bl_info = {
     "name": "rigid bodys gen",
     "author": "12funkeys",
-    "version": (0, 87),
-    "blender": (2, 74, 0),
+    "version": (0, 88),
+    "blender": (2, 80, 0),
     "location": "pose > selected bones",
     "description": "Set rigid body and constraint easily",
     "warning": "",
