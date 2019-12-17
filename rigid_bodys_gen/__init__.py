@@ -18,7 +18,7 @@ bl_info = {
 translation_dict = {
     "en_US" : {
         ("*", "Make Rigid Body Tools") : "Make Rigid Body Tools", 
-        ("*", "Rigid Body Gen") : "Rigid Body Gen", 
+        #("*", "Rigid Body Gen") : "Rigid Body Gen", 
         ("*", "Make Rigid Bodys") : "Make Rigid Bodys", 
         ("*", "Add Passive(on bones)") : "Add Passive(on bones)", 
         ("*", "make rigibodys move on bones") : "make rigibodys move on bones", 
@@ -28,7 +28,7 @@ translation_dict = {
     },
     "ja_JP" : {
         ("*", "Make Rigid Body Tools") : "選択ボーン", 
-        ("*", "Rigid Body Gen") : "剛体ツール", 
+        #("*", "Rigid Body Gen") : "剛体ツール", 
         ("*", "Make Rigid Bodys") : "選択ボーン", 
         ("*", "Add Passive(on bones)") : "基礎剛体の作成‐ボーン追従", 
         ("*", "make rigibodys move on bones") : "ボーンに追従する剛体を作成します", 
@@ -52,9 +52,9 @@ types = [('MOTOR', 'Motor', 'Motor'),
             ('GENERIC', 'Generic', 'Generic')]
 
 ### add Tool Panel
-class MenuRigidBodyTools(bpy.types.Panel):
+class RBG_PT_MenuRigidBodyTools(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
-    bl_region_type = 'TOOLS'
+    bl_region_type = 'UI'
     bl_category = "Rigid Body Gen"
     bl_context = "posemode"
     bl_label = "Make Rigid Body Tools"
@@ -68,25 +68,40 @@ class MenuRigidBodyTools(bpy.types.Panel):
         layout = self.layout
 
         col = layout.column(align=True)
-        col.operator(CreateRigidBodysOnBones.bl_idname, text=bpy.app.translations.pgettext("Add Passive(on bones)"), icon='BONE_DATA')
-        col.operator(CreateRigidBodysPhysics.bl_idname, text=bpy.app.translations.pgettext("Add Active"), icon='PHYSICS')
-        col.operator(CreateRigidBodysJoints.bl_idname, text=bpy.app.translations.pgettext("Add Joints"), icon='CONSTRAINT_DATA')
-        col.operator(CreateRigidBodysPhysicsJoints.bl_idname, text=bpy.app.translations.pgettext("Add Active & Joints"), icon='MOD_PHYSICS')
+        col.operator(RBG_OT_CreateRigidBodysOnBones.bl_idname, text=bpy.app.translations.pgettext("Add Passive(on bones)"), icon='BONE_DATA')
+        col.operator(RBG_OT_CreateRigidBodysPhysics.bl_idname, text=bpy.app.translations.pgettext("Add Active"), icon='PHYSICS')
+        col.operator(RBG_OT_CreateRigidBodysJoints.bl_idname, text=bpy.app.translations.pgettext("Add Joints"), icon='RIGID_BODY_CONSTRAINT')
+        col.operator(RBG_OT_CreateRigidBodysPhysicsJoints.bl_idname, text=bpy.app.translations.pgettext("Add Active & Joints"), icon='RIGID_BODY')
 
 
 ### add MainMenu
-class MenuRigidBodys(bpy.types.Menu):
-    bl_idname = "menu.create_rigidbodys"
+class RBG_MT_MenuRigidBodys(bpy.types.Menu):
+    bl_idname = "menu_MT_create_rigidbodys"
     bl_label = "Make Rigid Bodys"
     bl_description = "make rigibodys & constraint"
 
     def draw(self, context):
         layout = self.layout
-        layout.operator(CreateRigidBodysOnBones.bl_idname, icon='BONE_DATA')
-        layout.operator(CreateRigidBodysPhysics.bl_idname, icon='PHYSICS')
-        layout.operator(CreateRigidBodysJoints.bl_idname, icon='CONSTRAINT_DATA')
-        layout.operator(CreateRigidBodysPhysicsJoints.bl_idname, icon='MOD_PHYSICS')
+        layout.operator(RBG_OT_CreateRigidBodysOnBones.bl_idname, icon='BONE_DATA')
+        layout.operator(RBG_OT_CreateRigidBodysPhysics.bl_idname, icon='PHYSICS')
+        layout.operator(RBG_OT_CreateRigidBodysJoints.bl_idname, icon='RIGID_BODY_CONSTRAINT')
+        layout.operator(RBG_OT_CreateRigidBodysPhysicsJoints.bl_idname, icon='RIGID_BODY')
 
+    # add menu
+    def menu_fn(self, context):
+        self.layout.separator()
+        self.layout.menu(self.bl_idname, icon='MESH_ICOSPHERE')
+
+
+    @classmethod
+    def register(cls):
+        bpy.app.translations.register(__name__, translation_dict)
+        bpy.types.VIEW3D_MT_pose.append(cls.menu_fn)
+        
+    @classmethod
+    def unregister(cls):
+        bpy.types.VIEW3D_MT_pose.remove(cls.menu_fn)
+        bpy.app.translations.unregister(__name__)
 
 ### user prop
 class UProp:
@@ -356,7 +371,7 @@ class UProp:
 
 
 ### Create Rigid Bodys On Bones
-class CreateRigidBodysOnBones(bpy.types.Operator):
+class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
 
     bl_idname = "rigidbody.on_bones"
     bl_label = "Add Passive(on bones)"
@@ -523,7 +538,7 @@ class CreateRigidBodysOnBones(bpy.types.Operator):
         return {'FINISHED'}
 
 #
-class CreateRigidBodysPhysics(bpy.types.Operator):
+class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
 
     bl_idname = "rigidbody.physics"
     bl_label = "Add Active"
@@ -689,7 +704,7 @@ class CreateRigidBodysPhysics(bpy.types.Operator):
         return {'FINISHED'}
     
 #
-class CreateRigidBodysJoints(bpy.types.Operator):
+class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
     bl_idname = "rigidbody.joints"
     bl_label = "Add Joints"
@@ -930,7 +945,7 @@ class CreateRigidBodysJoints(bpy.types.Operator):
         self.report({'INFO'}, "OK")
         return {'FINISHED'}
 
-class CreateRigidBodysPhysicsJoints(bpy.types.Operator):
+class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
     bl_idname = "rigidbody.physics_joints"
     bl_label = "Add Active & Joints"
@@ -1392,11 +1407,6 @@ class CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         self.report({'INFO'}, "OK")
         return {'FINISHED'}
 
-# add menu
-def menu_fn(self, context):
-    self.layout.separator()
-    self.layout.menu(MenuRigidBodys.bl_idname, icon='MESH_ICOSPHERE')
-
 
 def add_mat(self, context):
         #new material
@@ -1419,22 +1429,26 @@ def add_RigidBody_World():
         if scene.rigidbody_world is None:
             bpy.ops.rigidbody.world_add()
 
-# addon enable
+
+classes = [
+    RBG_PT_MenuRigidBodyTools,
+    RBG_MT_MenuRigidBodys,
+    RBG_OT_CreateRigidBodysOnBones,
+    RBG_OT_CreateRigidBodysPhysics,
+    RBG_OT_CreateRigidBodysJoints,
+    RBG_OT_CreateRigidBodysPhysicsJoints
+]
+
+# クラスの登録
 def register():
-    bpy.utils.register_module(__name__)
-    #bpy.utils.register_class(MenuRigidBodyTools)
-    bpy.types.VIEW3D_MT_pose.append(menu_fn)
-    bpy.app.translations.register(__name__, translation_dict)
-    print("rigid_bodys_gen enabled")
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
-
-# addon disable
+# クラスの登録解除
 def unregister():
-    bpy.app.translations.unregister(__name__)
-    bpy.types.VIEW3D_MT_pose.remove(menu_fn)
-    #bpy.utils.unregister_class(MenuRigidBodyTools)
-    bpy.utils.unregister_module(__name__)
-    print("rigid_bodys_gen disable")
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
+    
 
 
 # main
