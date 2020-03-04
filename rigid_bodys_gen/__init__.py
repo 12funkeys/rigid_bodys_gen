@@ -17,21 +17,21 @@ bl_info = {
 
 translation_dict = {
     "en_US" : {
-        ("*", "Make Rigid Body Tools") : "Make Rigid Body Tools", 
-        #("*", "Rigid Body Gen") : "Rigid Body Gen", 
-        ("*", "Make Rigid Bodys") : "Make Rigid Bodys", 
-        ("*", "Add Passive(on bones)") : "Add Passive(on bones)", 
-        ("*", "make rigibodys move on bones") : "make rigibodys move on bones", 
+        ("*", "Make Rigid Body Tools") : "Make Rigid Body Tools",
+        #("*", "Rigid Body Gen") : "Rigid Body Gen",
+        ("*", "Make Rigid Bodys") : "Make Rigid Bodys",
+        ("*", "Add Passive(on bones)") : "Add Passive(on bones)",
+        ("*", "make rigibodys move on bones") : "make rigibodys move on bones",
         ("*", "Add Active") : "Add Active",
         ("*", "Add Joints") : "Add Joints",
         ("*", "Add Active & Joints") : "Add Active & Joints"
     },
     "ja_JP" : {
-        ("*", "Make Rigid Body Tools") : "選択ボーン", 
-        #("*", "Rigid Body Gen") : "剛体ツール", 
-        ("*", "Make Rigid Bodys") : "選択ボーン", 
-        ("*", "Add Passive(on bones)") : "基礎剛体の作成‐ボーン追従", 
-        ("*", "make rigibodys move on bones") : "ボーンに追従する剛体を作成します", 
+        ("*", "Make Rigid Body Tools") : "選択ボーン",
+        #("*", "Rigid Body Gen") : "剛体ツール",
+        ("*", "Make Rigid Bodys") : "選択ボーン",
+        ("*", "Add Passive(on bones)") : "基礎剛体の作成‐ボーン追従",
+        ("*", "make rigibodys move on bones") : "ボーンに追従する剛体を作成します",
         ("*", "Add Active") : "基礎剛体の作成‐物理演算",
         ("*", "Add Joints") : "基礎Jointの作成",
         ("*", "Add Active & Joints") : "基礎剛体／連結Jointの作成"
@@ -97,7 +97,7 @@ class RBG_MT_MenuRigidBodys(bpy.types.Menu):
     def register(cls):
         bpy.app.translations.register(__name__, translation_dict)
         bpy.types.VIEW3D_MT_pose.append(cls.menu_fn)
-        
+
     @classmethod
     def unregister(cls):
         bpy.types.VIEW3D_MT_pose.remove(cls.menu_fn)
@@ -311,7 +311,7 @@ class UProp:
             default = 10.000,
             subtype = 'NONE',
             min = 0)
-            
+
         jo_spring_stiffness_z = FloatProperty(
             name = "Stiffness",
             description = "Stiffness on the Z Axis",
@@ -342,8 +342,8 @@ class UProp:
             subtype = 'NONE',
             min = 0,
             max = 1)
-            
-        
+
+
         jo_constraint_object = BoolProperty(
             name='Auto Constraint Object',
             description='Constraint Object',
@@ -377,10 +377,10 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
     bl_label = "Add Passive(on bones)"
     bl_description = "make rigibodys move on bones"
     bl_options = {'REGISTER', 'UNDO'}
-    
+
     init_rc_dimX = 0.28
     init_rc_dimY = 0.28
-    init_rc_dimZ = 1.30    
+    init_rc_dimZ = 1.30
 
     ###instance UProp.rigidbody
     p_rb_shape = UProp.rb_shape
@@ -396,7 +396,7 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
 
 
     def __init__(self):
-        
+
         self.p_rb_dim = (1, 1, 1)
 
     def draw(self, context):
@@ -405,7 +405,7 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
         #    layout = self.layout
         #    layout.label("You shuld select bone first", icon="ERROR")
         #    return {'FINISHED'}
-                        
+
 
         layout = self.layout
 
@@ -426,17 +426,17 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
         box.prop(self, 'p_rb_rootbody_animated')
         box.prop(self, 'p_rb_parent_armature')
 
-    ### 
+    ###
     def execute(self, context):
-        
+
         #bpy.ops.screen.frame_jump(end=False)
         #bpy.ops.ptcache.free_bake_all()
 
         #bpy.context.RigidBodyWorld.point_cache.frame_start = 1
-        
+
         ###selected Armature
         ob = bpy.context.active_object
-        acrive_layer = bpy.context.scene.active_layer
+        #acrive_layer = bpy.context.scene.active_layer
         #self.report({'INFO'}, ob.data)
 
         ### Apply Object transform
@@ -459,12 +459,12 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             return {'FINISHED'}
 
         for selected_bones in bpy.context.selected_pose_bones:
-            #self.report({'INFO'}, str(selected_bones.vector[0]))            
-            
+            #self.report({'INFO'}, str(selected_bones.vector[0]))
+
             ###Create Rigidbody Cube
             bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
-            bpy.context.object.layers[acrive_layer] = True
-            bpy.context.object.layers[19] = False
+            #bpy.context.object.layers[acrive_layer] = True
+            #bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             rc.name = "rbg." + selected_bones.name
             rc.show_x_ray = True
@@ -479,17 +479,17 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             dt.subtarget = selected_bones.name
             dt.head_tail = 1
             dt.track_axis = 'TRACK_Z'
-            
+
             ### Apply Tranceform
             bpy.ops.object.visual_transform_apply()
             rc.constraints.remove(dt)
-            
+
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0], 
-                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1], 
+                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0],
+                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1],
                 selected_bones.length * self.init_rc_dimZ * self.p_rb_dim[2]]
-            
+
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -515,11 +515,11 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             CoC.name = 'Child_Of_' + selected_bones.name
             CoC.target = ob
             CoC.subtarget = selected_bones.name
-            
+
             #without ops way to childof_set_inverse
             sub_target = bpy.data.objects[ob.name].pose.bones[selected_bones.name]
             #self.report({'INFO'}, str(sub_target))
-            CoC.inverse_matrix = sub_target.matrix.inverted()   
+            CoC.inverse_matrix = sub_target.matrix.inverted()
             rc.update_tag({'OBJECT'})
             bpy.context.scene.update()
 
@@ -532,8 +532,8 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
-        bpy.ops.pose.select_all(action='DESELECT')  
-        
+        bpy.ops.pose.select_all(action='DESELECT')
+
         self.report({'INFO'}, "OK")
         return {'FINISHED'}
 
@@ -547,7 +547,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
 
     init_rc_dimX = 0.28
     init_rc_dimY = 0.28
-    init_rc_dimZ = 1.30    
+    init_rc_dimZ = 1.30
 
     ###instance UProp.rigidbody
     p_rb_shape = UProp.rb_shape
@@ -562,7 +562,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
     p_rb_parent_armature = UProp.rc_parent_armature
 
     def __init__(self):
-        
+
         self.p_rb_dim = (1, 1, 1)
 
     def draw(self, context):
@@ -590,9 +590,9 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
         box.prop(self, 'p_rb_rootbody_animated')
         box.prop(self, 'p_rb_parent_armature')
 
-    ### 
+    ###
     def execute(self, context):
-        
+
         ###selected Armature
         ob = bpy.context.active_object
         acrive_layer = bpy.context.scene.active_layer
@@ -607,8 +607,8 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
         mat = add_mat(self, context)
 
         for selected_bones in bpy.context.selected_pose_bones:
-            #self.report({'INFO'}, str(selected_bones.vector[0]))            
-            
+            #self.report({'INFO'}, str(selected_bones.vector[0]))
+
             ###Create Rigidbody Cube
             bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
             bpy.context.object.layers[acrive_layer] = True
@@ -627,17 +627,17 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             dt.subtarget = selected_bones.name
             dt.head_tail = 1
             dt.track_axis = 'TRACK_Z'
-            
+
             ### Apply Tranceform
             bpy.ops.object.visual_transform_apply()
             rc.constraints.remove(dt)
-            
+
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0], 
-                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1], 
+                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0],
+                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1],
                 selected_bones.length * self.init_rc_dimZ * self.p_rb_dim[2]]
-            
+
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -672,13 +672,13 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             #self.report({'INFO'}, "info:" + str(CoC))
             CoC.name = 'Child_Of_' + rc.name
             CoC.target = rc
-            
+
             #bpy.ops.constraint.childof_set_inverse(constraint=CoC.name, owner=ab)
-            
+
             #without ops way to childof_set_inverse
             CoC_target = rc
             #self.report({'INFO'}, str(rc))
-            CoC.inverse_matrix = CoC_target.matrix_world.inverted()   
+            CoC.inverse_matrix = CoC_target.matrix_world.inverted()
             rc.update_tag({'OBJECT'})
             bpy.context.scene.update()
 
@@ -692,17 +692,17 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             #parent to armature
             if self.p_rb_parent_armature == True:
                 rc.parent = ob
-            
+
         ###clear object select
         bpy.context.scene.objects.active = ob
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.object.posemode_toggle() 
+        bpy.ops.object.posemode_toggle()
         bpy.ops.pose.select_all(action='DESELECT')
-        
+
         self.report({'INFO'}, "OK")
         return {'FINISHED'}
-    
+
 #
 class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
@@ -713,7 +713,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
     init_joint_dimX = 0.33
     init_joint_dimY = 0.33
-    init_joint_dimZ = 0.33    
+    init_joint_dimZ = 0.33
 
     ###instance UProp.joint
     joint_type = UProp.jo_type
@@ -790,7 +790,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
         sub = row.row(align=True)
         #sub.alignment = 'EXPAND'
         sub.prop(self, 'joint_Axis_limit_z', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_z_lower')  
+        sub.prop(self, 'joint_Axis_limit_z_lower')
         sub.prop(self, 'joint_Axis_limit_z_upper')
 
         #col = layout.column(align=True)
@@ -813,7 +813,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
         sub = row.row(align=True)
         #sub.alignment = 'EXPAND'
         sub.prop(self, 'joint_Angle_limit_z', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_z_lower')  
+        sub.prop(self, 'joint_Angle_limit_z_lower')
         sub.prop(self, 'joint_Angle_limit_z_upper')
 
 
@@ -838,17 +838,17 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
         sub = row.row(align=True)
         #sub.alignment = 'EXPAND'
         sub.prop(self, 'joint_use_spring_z', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_z')  
+        sub.prop(self, 'joint_spring_stiffness_z')
         sub.prop(self, 'joint_spring_damping_z')
-        
+
         col.prop(self, 'p_rb_parent_armature')
 
 
-    ### 
+    ###
     def execute(self, context):
- 
-        add_RigidBody_World()        
-        
+
+        add_RigidBody_World()
+
         ###selected Armature
         ob = bpy.context.active_object
         acrive_layer = bpy.context.scene.active_layer
@@ -863,8 +863,8 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
         mat = add_mat(self, context)
 
         for selected_bones in bpy.context.selected_pose_bones:
-            #self.report({'INFO'}, str(selected_bones.vector[0]))            
-            
+            #self.report({'INFO'}, str(selected_bones.vector[0]))
+
             ###Create Rigidbody Cube
             bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.head, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
             bpy.context.object.layers[acrive_layer] = True
@@ -876,13 +876,13 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
             rc.show_wire = True
             rc.data.materials.append(mat)
             bpy.data.objects[rc.name].hide_render = True
-            
+
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_joint_dimX * self.joint_dim[0], 
-                selected_bones.length * self.init_joint_dimY * self.joint_dim[1], 
+                selected_bones.length * self.init_joint_dimX * self.joint_dim[0],
+                selected_bones.length * self.init_joint_dimY * self.joint_dim[1],
                 selected_bones.length * self.init_joint_dimZ * self.joint_dim[2]]
-            
+
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -940,8 +940,8 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
         bpy.ops.pose.select_all(action='DESELECT')
- 
-        
+
+
         self.report({'INFO'}, "OK")
         return {'FINISHED'}
 
@@ -955,7 +955,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
     init_rc_dimX = 0.28
     init_rc_dimY = 0.28
-    init_rc_dimZ = 1.30    
+    init_rc_dimZ = 1.30
 
     #pole_dict = {}
 
@@ -972,7 +972,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
     init_joint_dimX = 0.33
     init_joint_dimY = 0.33
-    init_joint_dimZ = 0.33    
+    init_joint_dimZ = 0.33
 
     ###instance UProp.joint
     joint_type = UProp.jo_type
@@ -1008,7 +1008,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
 
     def __init__(self):
-        
+
         self.p_rb_dim = (1, 1, 1)
         self.joint_dim = (1, 1, 1)
 
@@ -1063,7 +1063,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         sub = row.row(align=True)
         #sub.alignment = 'EXPAND'
         sub.prop(self, 'joint_Axis_limit_z', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_z_lower')  
+        sub.prop(self, 'joint_Axis_limit_z_lower')
         sub.prop(self, 'joint_Axis_limit_z_upper')
 
         #col = layout.column(align=True)
@@ -1086,7 +1086,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         sub = row.row(align=True)
         #sub.alignment = 'EXPAND'
         sub.prop(self, 'joint_Angle_limit_z', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_z_lower')  
+        sub.prop(self, 'joint_Angle_limit_z_lower')
         sub.prop(self, 'joint_Angle_limit_z_upper')
 
 
@@ -1111,14 +1111,14 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         sub = row.row(align=True)
         #sub.alignment = 'EXPAND'
         sub.prop(self, 'joint_use_spring_z', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_z')  
+        sub.prop(self, 'joint_spring_stiffness_z')
         sub.prop(self, 'joint_spring_damping_z')
 
-    # 
+    #
     def execute(self, context):
 
-        add_RigidBody_World()        
-        
+        add_RigidBody_World()
+
         ###selected Armature
         ob = bpy.context.active_object
         acrive_layer = bpy.context.scene.active_layer
@@ -1132,20 +1132,20 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         #new material
         mat = add_mat(self, context)
         parent_bones_ob = ""
-        
+
         pole_dict = {}
-        
-        wm = bpy.context.window_manager 
+
+        wm = bpy.context.window_manager
 
         spb = bpy.context.selected_pose_bones
         tot = len(spb)
         wm.progress_begin(0, tot)
         i = 0
 
-        self.report({'INFO'}, "pole_dict:" + str(pole_dict)) 
+        self.report({'INFO'}, "pole_dict:" + str(pole_dict))
 
         for selected_bones in spb:
-            #self.report({'INFO'}, str(selected_bones.vector[0]))            
+            #self.report({'INFO'}, str(selected_bones.vector[0]))
 
             i += 1
             wm.progress_update(i)
@@ -1162,13 +1162,13 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             jc.show_wire = True
             jc.data.materials.append(mat)
             bpy.data.objects[jc.name].hide_render = True
-            
+
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_joint_dimX * self.joint_dim[0], 
-                selected_bones.length * self.init_joint_dimY * self.joint_dim[1], 
+                selected_bones.length * self.init_joint_dimX * self.joint_dim[0],
+                selected_bones.length * self.init_joint_dimY * self.joint_dim[1],
                 selected_bones.length * self.init_joint_dimZ * self.joint_dim[2]]
-            
+
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -1231,17 +1231,17 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
                     #dt.subtarget = selected_bones.name
                     #dt.head_tail = 1
                     #dt.track_axis = 'TRACK_Z'
-                    
+
                     ### Apply Tranceform
                     #bpy.ops.object.visual_transform_apply()
                     #rc2.constraints.remove(dt)
-                    
+
                     ### Rigid Body Dimensions
                     bpy.context.object.dimensions = [
-                        selected_bones.parent.length * self.init_joint_dimX, 
-                        selected_bones.parent.length * self.init_joint_dimY, 
+                        selected_bones.parent.length * self.init_joint_dimX,
+                        selected_bones.parent.length * self.init_joint_dimY,
                         selected_bones.parent.length * self.init_joint_dimZ]
-                    
+
                     ### Scale Apply
                     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -1263,11 +1263,11 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
                     CoC2.name = 'Child_Of_' + selected_bones.parent.name
                     CoC2.target = ob
                     CoC2.subtarget = selected_bones.parent.name
-                    
+
                     #without ops way to childof_set_inverse
                     sub_target = bpy.data.objects[ob.name].pose.bones[selected_bones.parent.name]
                     #self.report({'INFO'}, str(sub_target))
-                    CoC2.inverse_matrix = sub_target.matrix.inverted()   
+                    CoC2.inverse_matrix = sub_target.matrix.inverted()
                     rc2.update_tag({'OBJECT'})
                     bpy.context.scene.update()
 
@@ -1278,12 +1278,12 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
 
             ###constraint.object1
-            
+
             if selected_bones.parent is not None and selected_bones.parent not in spb and self.p_rb_add_pole_rootbody == True:
-                    
+
                 if selected_bones.parent not in pole_dict:
-                    pole_dict[selected_bones.parent] = rc2 
-                    self.report({'INFO'}, "pole_dict:" + str(pole_dict)) 
+                    pole_dict[selected_bones.parent] = rc2
+                    self.report({'INFO'}, "pole_dict:" + str(pole_dict))
                     jc.rigid_body_constraint.object1 = rc2
                     parent_bones_ob = "rbg." + ob.name + "." + selected_bones.name
                 else:
@@ -1299,8 +1299,8 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
 
 
-            #self.report({'INFO'}, "recursive:" + str(selected_bones.children_recursive)) 
-            #self.report({'INFO'}, "parent_bones_ob:" + str(parent_bones_ob)) 
+            #self.report({'INFO'}, "recursive:" + str(selected_bones.children_recursive))
+            #self.report({'INFO'}, "parent_bones_ob:" + str(parent_bones_ob))
 
 
             #parent to armature
@@ -1309,7 +1309,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
                 jc.parent = ob
 
 
-            ###Rigid Body Session            
+            ###Rigid Body Session
             ###Create Rigidbody Cube
             bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
             bpy.context.object.layers[acrive_layer] = True
@@ -1323,7 +1323,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
             ###constraint.object2
             #self.report({'INFO'}, "parent_bones_ob:" + str(parent_bones_ob))
-            if parent_bones_ob != "":            
+            if parent_bones_ob != "":
                 jc.rigid_body_constraint.object2 = bpy.data.objects[parent_bones_ob]
 
             if len(selected_bones.children_recursive) == 0:
@@ -1336,17 +1336,17 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             dt.subtarget = selected_bones.name
             dt.head_tail = 1
             dt.track_axis = 'TRACK_Z'
-            
+
             ### Apply Tranceform
             bpy.ops.object.visual_transform_apply()
             rc.constraints.remove(dt)
-            
+
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0], 
-                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1], 
+                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0],
+                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1],
                 selected_bones.length * self.init_rc_dimZ * self.p_rb_dim[2]]
-            
+
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -1374,13 +1374,13 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             #self.report({'INFO'}, "info:" + str(CoC))
             CoC.name = 'Child_Of_' + rc.name
             CoC.target = rc
-            
+
             #bpy.ops.constraint.childof_set_inverse(constraint=CoC.name, owner=ab)
-            
+
             #without ops way to childof_set_inverse
             CoC_target = rc
             #self.report({'INFO'}, str(rc))
-            CoC.inverse_matrix = CoC_target.matrix_world.inverted()   
+            CoC.inverse_matrix = CoC_target.matrix_world.inverted()
             rc.update_tag({'OBJECT'})
             bpy.context.scene.update()
 
@@ -1417,9 +1417,9 @@ def add_mat(self, context):
             mat.use_transparency = True
             mat.alpha = 0
             mat.use_shadows = False
-            mat.use_raytrace = False           
+            mat.use_raytrace = False
             return mat
-        
+
         else:
             mat = bpy.data.materials["rigid_mat"]
             return mat
@@ -1448,7 +1448,7 @@ def register():
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
-    
+
 
 
 # main
