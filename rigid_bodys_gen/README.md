@@ -3,7 +3,7 @@ Add Rigid bones and Joints on selected bones easily.
 選択したボーンに沿ってRigid Body（剛体）とRigid Body Constraints（ジョイント）を作成します。
 
 ## Requirements（使用条件）
-* Blender 2.74+
+* Blender 2.81
 
 ## Functions（機能）
 * Add Passive(on bones)  
@@ -55,4 +55,4 @@ Add "PASSIVE" rigid bones to root bone's parent in automatic.
 [MIT licenses](https://opensource.org/licenses/mit-license.php)
 
 ## Bugs
-* 
+*
