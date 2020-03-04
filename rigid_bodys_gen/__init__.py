@@ -462,14 +462,15 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             #self.report({'INFO'}, str(selected_bones.vector[0]))
 
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.center, rotation=(0.0, 0.0, 0.0))
             #bpy.context.object.layers[acrive_layer] = True
             #bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             rc.name = "rbg." + selected_bones.name
-            rc.show_x_ray = True
-            rc.show_transparent = True
-            rc.data.materials.append(mat)
+            rc.show_in_front = True
+            # rc.show_transparent = True
+            # rc.data.materials.append(mat)
             rc.hide_render = True
 
             ###Material set
@@ -520,15 +521,15 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             sub_target = bpy.data.objects[ob.name].pose.bones[selected_bones.name]
             #self.report({'INFO'}, str(sub_target))
             CoC.inverse_matrix = sub_target.matrix.inverted()
-            rc.update_tag({'OBJECT'})
-            bpy.context.scene.update()
+            rc.update_tag(refresh={'OBJECT'})
+            bpy.context.scene.update_tag()
 
             #parent to armature
             if self.p_rb_parent_armature == True:
                 rc.parent = ob
 
         ###clear object select
-        bpy.context.scene.objects.active = ob
+        bpy.context.view_layer.objects.active = ob
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
@@ -610,14 +611,15 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             #self.report({'INFO'}, str(selected_bones.vector[0]))
 
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.center, rotation=(0.0, 0.0, 0.0))
             bpy.context.object.layers[acrive_layer] = True
             bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             bpy.context.object.name = "rbg." + selected_bones.name
-            rc.show_x_ray = True
-            rc.show_transparent = True
-            rc.data.materials.append(mat)
+            rc.show_in_front = True
+            # rc.show_transparent = True
+            # rc.data.materials.append(mat)
             bpy.data.objects[rc.name].hide_render = True
 
             ###Material set
@@ -658,7 +660,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             bpy.context.object.rigid_body.angular_damping = self.p_rb_rotation
 
             ### Child OF
-            bpy.context.scene.objects.active = ob
+            bpy.context.view_layer.objects.active = ob
             bpy.ops.pose.armature_apply()
             #bpy.ops.pose.visual_transform_apply()
             bpy.ops.pose.select_all(action='DESELECT')
@@ -679,8 +681,8 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             CoC_target = rc
             #self.report({'INFO'}, str(rc))
             CoC.inverse_matrix = CoC_target.matrix_world.inverted()
-            rc.update_tag({'OBJECT'})
-            bpy.context.scene.update()
+            rc.update_tag(refresh={'OBJECT'})
+            bpy.context.scene.update_tag()
 
             ###parent none
             bpy.ops.object.editmode_toggle()
@@ -694,7 +696,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
                 rc.parent = ob
 
         ###clear object select
-        bpy.context.scene.objects.active = ob
+        bpy.context.view_layer.objects.active = ob
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
@@ -866,15 +868,16 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
             #self.report({'INFO'}, str(selected_bones.vector[0]))
 
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.head, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
-            bpy.context.object.layers[acrive_layer] = True
-            bpy.context.object.layers[19] = False
+            # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.head, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.head, rotation=(0.0, 0.0, 0.0))
+            # bpy.context.object.layers[acrive_layer] = True
+            # bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             bpy.context.object.name = "joint." + selected_bones.name
-            rc.show_x_ray = True
-            rc.show_transparent = True
-            rc.show_wire = True
-            rc.data.materials.append(mat)
+            rc.show_in_front = True
+            # rc.show_transparent = True
+            # rc.show_wire = True
+            # rc.data.materials.append(mat)
             bpy.data.objects[rc.name].hide_render = True
 
             ### Rigid Body Dimensions
@@ -935,7 +938,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
                 rc.parent = ob
 
         ###clear object select
-        bpy.context.scene.objects.active = ob
+        bpy.context.view_layer.objects.active = ob
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
@@ -1121,7 +1124,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
         ###selected Armature
         ob = bpy.context.active_object
-        acrive_layer = bpy.context.scene.active_layer
+        # acrive_layer = bpy.context.scene.active_layer
         self.report({'INFO'}, "ob:" + str(ob))
 
         ### Apply Object transform
@@ -1152,15 +1155,16 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
             ###Joint Session
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.head, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
-            bpy.context.object.layers[acrive_layer] = True
-            bpy.context.object.layers[19] = False
+            # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.head, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.head, rotation=(0.0, 0.0, 0.0))
+            # bpy.context.object.layers[acrive_layer] = True
+            # bpy.context.object.layers[19] = False
             jc = bpy.context.active_object
             jc.name = "joint." + ob.name + "." + selected_bones.name
-            jc.show_x_ray = True
-            jc.show_transparent = True
-            jc.show_wire = True
-            jc.data.materials.append(mat)
+            jc.show_in_front = True
+            # jc.show_transparent = True
+            # jc.show_wire = True
+            # jc.data.materials.append(mat)
             bpy.data.objects[jc.name].hide_render = True
 
             ### Rigid Body Dimensions
@@ -1214,14 +1218,15 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             if selected_bones.parent is not None and selected_bones.parent not in spb and selected_bones.parent not in pole_dict and self.p_rb_add_pole_rootbody == True:
 
                     ###Create Rigidbody Cube
-                    bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.parent.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
-                    bpy.context.object.layers[acrive_layer] = True
-                    bpy.context.object.layers[19] = False
+                    # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.parent.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+                    bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.parent.center, rotation=(0.0, 0.0, 0.0))
+                    # bpy.context.object.layers[acrive_layer] = True
+                    # bpy.context.object.layers[19] = False
                     rc2 = bpy.context.active_object
                     rc2.name = "rbg.pole." + ob.name + "." + selected_bones.parent.name
-                    rc2.show_x_ray = True
-                    rc2.show_transparent = True
-                    rc2.data.materials.append(mat)
+                    rc2.show_in_front = True
+                    # rc2.show_transparent = True
+                    # rc2.data.materials.append(mat)
                     rc2.hide_render = True
 
                     ###Material set
@@ -1268,11 +1273,11 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
                     sub_target = bpy.data.objects[ob.name].pose.bones[selected_bones.parent.name]
                     #self.report({'INFO'}, str(sub_target))
                     CoC2.inverse_matrix = sub_target.matrix.inverted()
-                    rc2.update_tag({'OBJECT'})
-                    bpy.context.scene.update()
+                    rc2.update_tag(refresh={'OBJECT'})
+                    bpy.context.scene.update_tag()
 
                     #parent to armature
-                    #bpy.context.scene.objects.active = ob
+                    #bpy.context.view_layer.objects.active = ob
                     if self.p_rb_parent_armature == True:
                         rc2.parent = ob
 
@@ -1305,20 +1310,21 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
             #parent to armature
             if self.p_rb_parent_armature == True:
-            #bpy.context.scene.objects.active = ob
+            #bpy.context.view_layer.objects.active = ob
                 jc.parent = ob
 
 
             ###Rigid Body Session
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
-            bpy.context.object.layers[acrive_layer] = True
-            bpy.context.object.layers[19] = False
+            # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.center, rotation=(0.0, 0.0, 0.0))
+            # bpy.context.object.layers[acrive_layer] = True
+            # bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             bpy.context.object.name = parent_bones_ob
-            rc.show_x_ray = True
-            rc.show_transparent = True
-            rc.data.materials.append(mat)
+            rc.show_in_front = True
+            # rc.show_transparent = True
+            # rc.data.materials.append(mat)
             bpy.data.objects[rc.name].hide_render = True
 
             ###constraint.object2
@@ -1362,7 +1368,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.context.object.rigid_body.angular_damping = self.p_rb_rotation
 
             ### Child OF
-            bpy.context.scene.objects.active = ob
+            bpy.context.view_layer.objects.active = ob
             bpy.ops.pose.armature_apply()
             #bpy.ops.pose.visual_transform_apply()
             bpy.ops.pose.select_all(action='DESELECT')
@@ -1381,12 +1387,12 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             CoC_target = rc
             #self.report({'INFO'}, str(rc))
             CoC.inverse_matrix = CoC_target.matrix_world.inverted()
-            rc.update_tag({'OBJECT'})
-            bpy.context.scene.update()
+            rc.update_tag(refresh={'OBJECT'})
+            bpy.context.scene.update_tag()
 
             #parent to armature
             if self.p_rb_parent_armature == True:
-            #bpy.context.scene.objects.active = ob
+            #bpy.context.view_layer.objects.active = ob
             #bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
                 rc.parent = ob
 
@@ -1396,7 +1402,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.ops.object.posemode_toggle()
 
         ###clear object select
-        bpy.context.scene.objects.active = ob
+        bpy.context.view_layer.objects.active = ob
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
@@ -1409,20 +1415,8 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
 
 def add_mat(self, context):
-        #new material
-        if "rigid_mat" not in bpy.data.materials:
-            mat = bpy.data.materials.new('rigid_mat')
-            mat.name = "rigid_mat"
-            mat.use_shadeless = True
-            mat.use_transparency = True
-            mat.alpha = 0
-            mat.use_shadows = False
-            mat.use_raytrace = False
-            return mat
+        bpy.context.object.display_type = 'WIRE'
 
-        else:
-            mat = bpy.data.materials["rigid_mat"]
-            return mat
 
 def add_RigidBody_World():
         scene = bpy.context.scene
