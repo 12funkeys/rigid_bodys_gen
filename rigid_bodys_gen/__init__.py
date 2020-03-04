@@ -445,7 +445,7 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
         bpy.ops.object.posemode_toggle()
 
         #new material
-        mat = add_mat(self, context)
+        #mat = add_mat(self, ob)
         #bpy.ops.material.new()
         #nm = bpy.data.materials[-1]
         #nm.name = "rigid_mat"
@@ -468,6 +468,7 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             #bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             rc.name = "rbg." + selected_bones.name
+            viewport_display(self, rc)
             rc.show_in_front = True
             # rc.show_transparent = True
             # rc.data.materials.append(mat)
@@ -605,7 +606,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
         bpy.ops.object.posemode_toggle()
 
         #new material
-        mat = add_mat(self, context)
+        #mat = add_mat(self, ob)
 
         for selected_bones in bpy.context.selected_pose_bones:
             #self.report({'INFO'}, str(selected_bones.vector[0]))
@@ -616,7 +617,8 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             # bpy.context.object.layers[acrive_layer] = True
             # bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
-            bpy.context.object.name = "rbg." + selected_bones.name
+            rc.name = "rbg." + selected_bones.name
+            viewport_display(self, rc)
             rc.show_in_front = True
             # rc.show_transparent = True
             # rc.data.materials.append(mat)
@@ -862,7 +864,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
         bpy.ops.object.posemode_toggle()
 
         #new material
-        mat = add_mat(self, context)
+        #mat = add_mat(self, ob)
 
         for selected_bones in bpy.context.selected_pose_bones:
             #self.report({'INFO'}, str(selected_bones.vector[0]))
@@ -873,7 +875,8 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
             # bpy.context.object.layers[acrive_layer] = True
             # bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
-            bpy.context.object.name = "joint." + selected_bones.name
+            rc.name = "joint." + selected_bones.name
+            viewport_display(self, rc)
             rc.show_in_front = True
             # rc.show_transparent = True
             # rc.show_wire = True
@@ -1133,7 +1136,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         bpy.ops.object.posemode_toggle()
 
         #new material
-        mat = add_mat(self, context)
+        #mat = add_mat(self, ob)
         parent_bones_ob = ""
 
         pole_dict = {}
@@ -1161,6 +1164,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             # bpy.context.object.layers[19] = False
             jc = bpy.context.active_object
             jc.name = "joint." + ob.name + "." + selected_bones.name
+            viewport_display(self, jc)
             jc.show_in_front = True
             # jc.show_transparent = True
             # jc.show_wire = True
@@ -1224,6 +1228,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
                     # bpy.context.object.layers[19] = False
                     rc2 = bpy.context.active_object
                     rc2.name = "rbg.pole." + ob.name + "." + selected_bones.parent.name
+                    viewport_display(self, rc2)
                     rc2.show_in_front = True
                     # rc2.show_transparent = True
                     # rc2.data.materials.append(mat)
@@ -1321,7 +1326,8 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             # bpy.context.object.layers[acrive_layer] = True
             # bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
-            bpy.context.object.name = parent_bones_ob
+            rc.name = parent_bones_ob
+            viewport_display(self, rc)
             rc.show_in_front = True
             # rc.show_transparent = True
             # rc.data.materials.append(mat)
@@ -1414,8 +1420,12 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         return {'FINISHED'}
 
 
-def add_mat(self, context):
-        bpy.context.object.display_type = 'WIRE'
+
+def viewport_display(self, rb):
+        rb.display_type = 'WIRE'
+        rb.show_in_front = True
+        rb.display.show_shadows = False
+        rb.hide_render = True
 
 
 def add_RigidBody_World():
