@@ -403,14 +403,14 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
 
         #if len(bpy.context.selected_pose_bones) == 0:
         #    layout = self.layout
-        #    layout.label("You shuld select bone first", icon="ERROR")
+        #    layout.label(text="You shuld select bone first", icon="ERROR")
         #    return {'FINISHED'}
 
 
         layout = self.layout
 
         # Branch specs
-        #layout.label('Tree Definition')
+        #layout.label(text='Tree Definition')
 
         #layout.prop(self,'chooseSet')
         box = layout.box()
@@ -570,13 +570,13 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
 
         #if len(bpy.context.selected_pose_bones) == 0:
         #    layout = self.layout
-        #    layout.label("You shuld select bone first", icon="ERROR")
+        #    layout.label(text="You shuld select bone first", icon="ERROR")
         #    return {'FINISHED'}
 
         layout = self.layout
 
         # Branch specs
-        #layout.label('Tree Definition')
+        #layout.label(text='Tree Definition')
 
         #layout.prop(self,'chooseSet')
         box = layout.box()
@@ -596,7 +596,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
 
         ###selected Armature
         ob = bpy.context.active_object
-        acrive_layer = bpy.context.scene.active_layer
+        # acrive_layer = bpy.context.scene.active_layer
         #self.report({'INFO'}, ob.data)
 
         ### Apply Object transform
@@ -613,8 +613,8 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             ###Create Rigidbody Cube
             # bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.center, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
             bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.center, rotation=(0.0, 0.0, 0.0))
-            bpy.context.object.layers[acrive_layer] = True
-            bpy.context.object.layers[19] = False
+            # bpy.context.object.layers[acrive_layer] = True
+            # bpy.context.object.layers[19] = False
             rc = bpy.context.active_object
             bpy.context.object.name = "rbg." + selected_bones.name
             rc.show_in_front = True
@@ -757,13 +757,13 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
         #if len(bpy.context.selected_pose_bones) == 0:
         #    layout = self.layout
-        #    layout.label("You shuld select bone first", icon="ERROR")
+        #    layout.label(text="You shuld select bone first", icon="ERROR")
         #    return {'FINISHED'}
 
         layout = self.layout
 
         # Branch specs
-        #layout.label('Tree Definition')
+        #layout.label(text='Tree Definition')
 
         #layout.prop(self,'chooseSet')
         box = layout.box()
@@ -772,7 +772,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
 
         col = box.column(align=True)
-        col.label("Limits:")
+        col.label(text="Limits:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
@@ -820,7 +820,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
 
         #col = layout.column(align=True)
-        col.label("Springs:")
+        col.label(text="Springs:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
@@ -853,7 +853,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
         ###selected Armature
         ob = bpy.context.active_object
-        acrive_layer = bpy.context.scene.active_layer
+        # acrive_layer = bpy.context.scene.active_layer
         #self.report({'INFO'}, ob.data)
 
         ### Apply Object transform
@@ -1019,7 +1019,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
         #if len(bpy.context.selected_pose_bones) == 0:
         #    layout = self.layout
-        #    layout.label("You shuld select bone first", icon="ERROR")
+        #    layout.label(text="You shuld select bone first", icon="ERROR")
         #    return {'FINISHED'}
 
         ###Rigid Body Object
@@ -1046,7 +1046,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         box.prop(self, 'joint_dim')
 
         col = box.column(align=True)
-        col.label("Limits:")
+        col.label(text="Limits:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
@@ -1094,7 +1094,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
 
         #col = layout.column(align=True)
-        col.label("Springs:")
+        col.label(text="Springs:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
