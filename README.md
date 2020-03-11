@@ -50,6 +50,8 @@ Add "PASSIVE" rigid bones to root bone's parent in automatic.
 アーマチュアのポーズは変形前に戻してから実行してください。
 * Armature's origin moves zero after you execute.
 機能の都合上、実行後のアーマチュアの原点が(0, 0, 0)位置になります。
+* [Interface] → [Translation] → uncheck [New Data] in Preferences.
+KeyError: ‘bpy_prop_collection[key]: key “Damped Track” not found’とエラーが出てしまう場合は、プリファレンスのインターフェイス→翻訳→新規データの新規データのチェックを外してください。
 
 ## Licenses（ライセンス）
 [MIT licenses](https://opensource.org/licenses/mit-license.php)
