@@ -1,5 +1,6 @@
 import bpy
 import bmesh
+import numpy as np
 
 # show UI
 ### add Tool Panel
@@ -43,7 +44,7 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
         bm = bmesh.from_edit_mesh(mesh)
         
         obamt = createArmature('armature', object.location)
-        self.report({'INFO'}, str(obamt))
+#        self.report({'INFO'}, str(obamt))
         
         
         bpy.ops.object.mode_set(mode='EDIT')
@@ -53,8 +54,12 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 
         vlist = [e for e in bm.verts if e.select]
         vindex = [e.index for e in bm.verts if e.select]
-
-
+        elist = [e for e in bm.edges if e.select]
+        elistv = np.ravel([(e.verts[0].index, e.verts[1].index) for e in elist])
+        elisttolist = elistv.tolist()
+        singleVerts = [i for i in list(set(elisttolist)) if elisttolist.count(i) == 1]
+#        self.report({'INFO'}, str(singleVerts))
+           
        #create Rigidbody object
         for v in vlist:
             wvco = mw @ v.co
@@ -72,9 +77,14 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
             
             ### Set Rigid Body
             bpy.ops.rigidbody.object_add()
-            rc.rigid_body.type = "ACTIVE"
+            if v.index in singleVerts:
+                rc.rigid_body.type = "PASSIVE"
+                rc.rigid_body.kinematic = True
+            else:
+                rc.rigid_body.type = "ACTIVE"
+                rc.rigid_body.kinematic = False
+                
             rc.rigid_body.collision_shape = "SPHERE"
-            rc.rigid_body.kinematic = False
             rc.rigid_body.mass = 1.0
             rc.rigid_body.friction = 0.5
             rc.rigid_body.restitution = 0.5
@@ -87,7 +97,7 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
         bpy.ops.object.parent_set(type='ARMATURE')
         bpy.ops.object.mode_set(mode='EDIT')
         for v in vlist:
-            self.report({'INFO'}, str(v))
+#            self.report({'INFO'}, str(v))
               
             bone = obamt[1].edit_bones.new('softbone.' + str(v.index))
             bone.head = v.co
@@ -108,52 +118,51 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 #            bpy.context.scene.update()
 
         bpy.ops.object.mode_set(mode='OBJECT')
-        for e in bm.edges:
-            if (e.select == True):
-                print(e)
-                self.report({'INFO'}, str(e))
-                self.report({'INFO'}, str(e.verts[0].co))
-                
-                mid = (e.verts[0].co + e.verts[1].co) / 2
-                wmid = mw @ mid
-                self.report({'INFO'}, str(mid))
-                
+        for e in elist:
+#            print(e)
+#            self.report({'INFO'}, str(e))
+#            self.report({'INFO'}, str(e.verts[0].co))
+                        
+            mid = (e.verts[0].co + e.verts[1].co) / 2
+            wmid = mw @ mid
+#            self.report({'INFO'}, str(mid))
+            
 #        self.report({'INFO'}, str(mw))
 #        self.report({'INFO'}, str(object.location))
-        
+    
 #                bpy.ops.mesh.primitive_cube_add(size=0.1, calc_uvs=True, enter_editmode=False, align='WORLD', location=wmid, rotation=(0.0, 0.0, 0.0))
-                jc = bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.1, align='WORLD', location=wmid)
-                ### Set Rigid Body Joint
-                jc = bpy.context.active_object
-                bpy.ops.rigidbody.constraint_add()
-                jc.rigid_body_constraint.type = 'GENERIC' #GENERIC_SPRING
-                jc.rigid_body_constraint.use_breaking = False
-                jc.rigid_body_constraint.disable_collisions = False
-                jc.rigid_body_constraint.use_override_solver_iterations = True
-                jc.rigid_body_constraint.breaking_threshold = 10
-                jc.rigid_body_constraint.solver_iterations = 10
-                jc.rigid_body_constraint.object1 = bpy.data.objects['rc.' + str(e.verts[0].index)]
-                jc.rigid_body_constraint.object2 = bpy.data.objects['rc.' + str(e.verts[1].index)]
+            jc = bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.1, align='WORLD', location=wmid)
+            ### Set Rigid Body Joint
+            jc = bpy.context.active_object
+            bpy.ops.rigidbody.constraint_add()
+            jc.rigid_body_constraint.type = 'GENERIC' #GENERIC_SPRING
+            jc.rigid_body_constraint.use_breaking = False
+            jc.rigid_body_constraint.disable_collisions = False
+            jc.rigid_body_constraint.use_override_solver_iterations = True
+            jc.rigid_body_constraint.breaking_threshold = 10
+            jc.rigid_body_constraint.solver_iterations = 10
+            jc.rigid_body_constraint.object1 = bpy.data.objects['rc.' + str(e.verts[0].index)]
+            jc.rigid_body_constraint.object2 = bpy.data.objects['rc.' + str(e.verts[1].index)]
   
-                jc.rigid_body_constraint.use_limit_lin_x = True
-                jc.rigid_body_constraint.use_limit_lin_y = True
-                jc.rigid_body_constraint.use_limit_lin_z = True
-                jc.rigid_body_constraint.limit_lin_x_lower = 0
-                jc.rigid_body_constraint.limit_lin_y_lower = 0
-                jc.rigid_body_constraint.limit_lin_z_lower = 0
-                jc.rigid_body_constraint.limit_lin_x_upper = 0
-                jc.rigid_body_constraint.limit_lin_y_upper = 0
-                jc.rigid_body_constraint.limit_lin_z_upper = 0
+            jc.rigid_body_constraint.use_limit_lin_x = True
+            jc.rigid_body_constraint.use_limit_lin_y = True
+            jc.rigid_body_constraint.use_limit_lin_z = True
+            jc.rigid_body_constraint.limit_lin_x_lower = 0
+            jc.rigid_body_constraint.limit_lin_y_lower = 0
+            jc.rigid_body_constraint.limit_lin_z_lower = 0
+            jc.rigid_body_constraint.limit_lin_x_upper = 0
+            jc.rigid_body_constraint.limit_lin_y_upper = 0
+            jc.rigid_body_constraint.limit_lin_z_upper = 0
 
-                jc.rigid_body_constraint.use_limit_ang_x = True
-                jc.rigid_body_constraint.use_limit_ang_y = True
-                jc.rigid_body_constraint.use_limit_ang_z = True
-                jc.rigid_body_constraint.limit_ang_x_lower = -0.785398
-                jc.rigid_body_constraint.limit_ang_y_lower = -0.785398
-                jc.rigid_body_constraint.limit_ang_z_lower = -0.785398
-                jc.rigid_body_constraint.limit_ang_x_upper = 0.785398
-                jc.rigid_body_constraint.limit_ang_y_upper = 0.785398
-                jc.rigid_body_constraint.limit_ang_z_upper = 0.785398
+            jc.rigid_body_constraint.use_limit_ang_x = True
+            jc.rigid_body_constraint.use_limit_ang_y = True
+            jc.rigid_body_constraint.use_limit_ang_z = True
+            jc.rigid_body_constraint.limit_ang_x_lower = -0.785398
+            jc.rigid_body_constraint.limit_ang_y_lower = -0.785398
+            jc.rigid_body_constraint.limit_ang_z_lower = -0.785398
+            jc.rigid_body_constraint.limit_ang_x_upper = 0.785398
+            jc.rigid_body_constraint.limit_ang_y_upper = 0.785398
+            jc.rigid_body_constraint.limit_ang_z_upper = 0.785398
 
 #                jc.rigid_body_constraint.use_spring_x = self.joint_use_spring_x
 #                jc.rigid_body_constraint.use_spring_y = self.joint_use_spring_y
@@ -165,7 +174,7 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 #                jc.rigid_body_constraint.spring_damping_y = self.joint_spring_damping_y
 #                jc.rigid_body_constraint.spring_damping_z = self.joint_spring_damping_z
 #  
-  
+    
         for v in vindex:
             #make vertex group
             bpy.context.view_layer.objects.active = object
