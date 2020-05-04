@@ -1,0 +1,223 @@
+
+TODO：
+・パラメーター設定
+・パラメータープリセット
+・進捗バー
+
+0.88
+
+アドオン更新方法
+
+ソースをAtomで更新して、Blenderでインストール後はアドオンの場所のファイルを直接上書きして更新
+
+アドオンの場所
+MAC
+/Users/micc/Library/Application Support/Blender/2.81/scripts/addons
+
+2.8対応
+・クラス名称ルール適用
+・
+rigidbody shapeが表示されないのはバグらしい
+https://developer.blender.org/T70543
+⇨もう治った
+
+インストールできた
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 448, in execute
+    mat = add_mat(self, context)
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1416, in add_mat
+    mat.use_shadeless = True
+AttributeError: 'Material' object has no attribute 'use_shadeless'
+
+      マテリアル設定昨日の見直し必要。internal renderなくなったので。
+      剛体の表示をどうするか
+      旧式は、オブジェクト自体は非表示にして、剛体のタイプを表示していた。
+      ⇨Wire表示にして、shapeのを表示する
+      def add_mat(self, context):
+
+      .data.materials.append(mat)
+      をコメントアウト
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1124, in execute
+    acrive_layer = bpy.context.scene.active_layer
+AttributeError: 'Scene' object has no attribute 'active_layer'
+
+      active_layer 関係を非表示に。19レイヤーとかなんでだったかわすれた。
+
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1155, in execute
+    bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=selected_bones.head, layers=(False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True))
+  File "/Applications/Blender.app/Contents/Resources/2.81/scripts/modules/bpy/ops.py", line 201, in __call__
+    ret = op_call(self.idname_py(), None, kw)
+TypeError: Converting py args to operator properties: : keyword "radius" unrecognized
+
+      primitive_cube_addの構文が変わったので差し替え
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1164, in execute
+    jc.show_x_ray = True
+AttributeError: 'Object' object has no attribute 'show_x_ray'
+
+      下記で対応
+      rc.show_in_front = True
+      # rc.show_transparent = True
+      # rc.show_wire = True
+      # rc.data.materials.append(mat)
+
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1276, in execute
+    rc2.update_tag({'OBJECT'})
+TypeError: Object.update_tag(): required parameter "refresh" to be a keyword argument!
+
+      構文の更新
+      update_tag(refresh={'OBJECT'})
+
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1277, in execute
+    bpy.context.scene.update()
+AttributeError: 'Scene' object has no attribute 'update'
+
+      update_tagに置換で解決
+
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1371, in execute
+    bpy.context.scene.objects.active = ob
+AttributeError: bpy_prop_collection: attribute "active" not found
+
+アクティブオブジェクトの指定構文が変わった。
+bpy.context.view_layer.objects.active = bpy.data.objects[0]
+
+
+とりあえず動作するところまで動いた
+動作後のオプション変更でエラー発生
+
+Traceback (most recent call last):
+  File "/Users/micc/Library/Application Support/Blender/2.81/scripts/addons/rigid_bodys_gen/__init__.py", line 1049, in draw
+    col.label("Limits:")
+TypeError: UILayout.label(): required parameter "text" to be a keyword argument!
+
+      col.label("Limits:")
+      ↓
+      col.label(text="Limits:")
+
+剛体の表示を設定
+
+不要なコメントを削除
+
+
+済：タブが表示されない。
+
+
+
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/bone_gen/bonegen_dev.blend/AddBones.py", line 50, in execute
+  File "/Users/micc/Documents/blender/addon/bone_gen/bonegen_dev.blend/AddBones.py", line 70, in createArmatureFromData
+AttributeError: 'Object' object has no attribute 'selected'
+
+location: <unknown location>:-1
+
+ob.select_set(state=True)
+
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/bone_gen/bonegen_dev.blend/AddBones.py", line 50, in execute
+  File "/Users/micc/Documents/blender/addon/bone_gen/bonegen_dev.blend/AddBones.py", line 69, in createArmatureFromData
+AttributeError: bpy_prop_collection: attribute "active" not found
+
+location: <unknown location>:-1
+
+bpy.context.view_layer.objects.active = ob
+
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/bone_gen/bonegen_dev.blend/AddBones.py", line 50, in execute
+  File "/Users/micc/Documents/blender/addon/bone_gen/bonegen_dev.blend/AddBones.py", line 68, in createArmatureFromData
+AttributeError: 'bpy_prop_collection' object has no attribute 'link'
+
+location: <unknown location>:-1
+
+#sceneにLinkはなくなった
+scn = bpy.context.collection
+scn.objects.link(ob)
+
+
+アーマチュアつくるとこまで、ループの中に入れたらだめだから
+アーマチュアとボーンの機能を分離するところから
+
+親子だったらつなぐというロジックから
+頂点が一緒だったらつなぐというロジックにする
+３頂点重なったらジョイントも３つ？
+
+テストツール
+・選択ボーン同士をジョイントするボタン
+・
+
+選択辺の頂点に剛体とボーンを置く（１頂点１剛体）
+辺の真ん中にジョイントを設置する
+剛体をつなぐ
+頂点ウェイトで角度を調整できるようにする
+
+softengine
+選択頂点にボーンを生成
+選択頂点またはボーン位置に剛体オブジェクト生成
+選択辺の真ん中に剛体ジョイントオブジェクト生成
+剛体とジョイントを設定
+頂点情報と、辺の頂点情報のindexを照らし合わせてジョイントをつないでいく。
+
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/rigid_bodys_gen/rigid_bodys_gen_dev.blend/SoftEngine.py", line 68, in execute
+TypeError: Element-wise multiplication: not supported between 'Vector' and 'Vector' types
+
+location: <unknown location>:-1
+
+python - TypeError: Element-wise multiplication: not supported between 'Matrix' and 'Vector' - Blender Stack Exchange
+https://blender.stackexchange.com/questions/129473/typeerror-element-wise-multiplication-not-supported-between-matrix-and-vect
+アダマール積は使えなくなった。
+* じゃなくて @
+
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/rigid_bodys_gen/rigid_bodys_gen_dev.blend/SoftEngine.py", line 70, in execute
+  File "/Applications/Blender.app/Contents/Resources/2.81/scripts/modules/bpy/ops.py", line 201, in __call__
+    ret = op_call(self.idname_py(), None, kw)
+ValueError: Converting py args to operator properties:  sequence expected at dimension 1, not 'float'
+
+location: <unknown location>:-1
+
+ジョイント用オブジェクトの座標がずれちゃう問題。
+world_matrixを@する
+
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/rigid_bodys_gen/rigid_bodys_gen_dev.blend/SoftEngine.py", line 65, in execute
+KeyError: 'bpy_prop_collection[key]: key "softbone.306" not found'
+
+location: <unknown location>:-1
+
+obamt[0].pose.bones[bone.name].constraints.new("CHILD_OF")でエラー
+
+
+python - Child Of's set inverse without using bpy.ops - Blender Stack Exchange
+https://blender.stackexchange.com/questions/18562/child-ofs-set-inverse-without-using-bpy-ops
+
+
+あとはウェイト設定
+ジョイント紐付け
+
+親紐付けで頂点グループつくるのにエディットモードじゃだめってエラー
+Traceback (most recent call last):
+  File "/Users/micc/Documents/blender/addon/rigid_bodys_gen/rigid_bodys_gen_dev.blend/SoftEngine.py", line 99, in execute
+RuntimeError: Error: VertexGroup.add(): cannot be called while object is in edit mode
+
+
+BMedgeの情報はどうやらエディットモード切り替えるとリセットされてしまうらしいので、
+実施順番を入れ替えて対応。
+
+人撮り設定できたけどジョイントのlinerリミットが効かないし、passiveもすり抜ける。
+→剛体が小さすぎたらしい。10倍にしたら大丈夫だった。
+
+端っこの剛体にはstaticにしたい。
+→選択辺の頂点を記録して重複がない頂点のindexリストを作る
+→重複がない頂点はstaticを設定する。
