@@ -1,6 +1,304 @@
 import bpy
+from bpy.props import *
 import bmesh
 import numpy as np
+
+bl_info = {
+    "name": "soft engine",
+    "author": "12funkeys",
+    "version": (0, 1),
+    "blender": (2, 80, 0),
+    "location": "Object > Edit mode",
+    "description": "Set rigid body and constraint easily",
+    "warning": "",
+    "support": "COMMUNITY",
+    "wiki_url": "",
+    "tracker_url": "",
+    "category": "Rigging"
+}
+
+shapes = [
+        ('MESH', 'Mesh', 'Mesh'),
+        ('CONVEX_HULL', 'Convex Hull', 'Convex Hull'),
+        ('CONE', 'Cone', 'Cone'),
+        ('CYLINDER', 'Cylinder', 'Cylinder'),
+        ('CAPSULE', 'Capsule', 'Capsule'),
+        ('SPHERE', 'Sphere', 'Sphere'),
+        ('BOX', 'Box', 'Box')]
+
+types = [('MOTOR', 'Motor', 'Motor'),
+            ('GENERIC_SPRING', 'Generic Spring', 'Generic Spring'),
+            ('GENERIC', 'Generic', 'Generic')]
+
+### user prop
+def user_props():
+        scene = bpy.types.Scene
+        scene.rb_shape = EnumProperty(
+            name='Shape',
+            description='Choose Rigid Body Shape',
+            items=shapes,
+            default='CAPSULE')
+
+        scene.rc_dim = FloatVectorProperty(
+            name = "Dimensions",
+            description = "rigid body Dimensions XYZ",
+            default = (1, 1, 1),
+            subtype = 'XYZ',
+            unit = 'NONE',
+            min = 0,
+            max = 5)
+
+        scene.rc_mass = FloatProperty(
+            name = "Mass",
+            description = "rigid body mass",
+            default = 1.0,
+            subtype = 'NONE',
+            min = 0.001,)
+
+        scene.rc_friction = FloatProperty(
+            name = "Friction",
+            description = "rigid body friction",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+        scene.rc_bounciness = FloatProperty(
+            name = "Bounciness",
+            description = "rigid body bounciness",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+        scene.rc_translation = FloatProperty(
+            name = "Translation",
+            description = "rigid body translation",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+        scene.rc_rotation = FloatProperty(
+            name = "Rotation",
+            description = "rigid body rotation",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+
+        scene.jo_type = EnumProperty(
+            name='Type',
+            description='Choose Contstraint Type',
+            items=types,
+            default='GENERIC_SPRING')
+
+        scene.jo_dim = FloatVectorProperty(
+            name = "joint Dimensions",
+            description = "joint Dimensions XYZ",
+            default = (1, 1, 1),
+            subtype = 'XYZ',
+            unit = 'NONE',
+            min = 0,
+            max = 5)
+
+        scene.jo_limit_lin_x = BoolProperty(
+            name='X Axis',
+            description='limit x',
+            default=True,
+            options={'ANIMATABLE'})
+
+        scene.jo_limit_lin_y = BoolProperty(
+            name='Y Axis',
+            description='limit y',
+            default=True)
+
+        scene.jo_limit_lin_z = BoolProperty(
+            name='Z Axis',
+            description='limit z',
+            default=True)
+
+        scene.jo_limit_lin_x_lower = FloatProperty(
+            name = "Lower",
+            description = "joint limit_lin_x_lower",
+            default = 0,
+            subtype = 'NONE')
+
+        scene.jo_limit_lin_y_lower = FloatProperty(
+            name = "Lower",
+            description = "joint limit_lin_y_lower",
+            default = 0,
+            subtype = 'NONE')
+
+        scene.jo_limit_lin_z_lower = FloatProperty(
+            name = "Lower",
+            description = "joint limit_lin_z_lower",
+            default = 0,
+            subtype = 'NONE')
+
+        scene.jo_limit_lin_x_upper = FloatProperty(
+            name = "Upper",
+            description = "joint limit_lin_x_upper",
+            default = 0,
+            subtype = 'NONE')
+
+        scene.jo_limit_lin_y_upper = FloatProperty(
+            name = "Upper",
+            description = "joint limit_lin_y_upper",
+            default = 0,
+            subtype = 'NONE')
+
+        scene.jo_limit_lin_z_upper = FloatProperty(
+            name = "Upper",
+            description = "joint limit_lin_z_upper",
+            default = 0,
+            subtype = 'NONE')
+
+        scene.jo_limit_ang_x = BoolProperty(
+            name='X Angle',
+            description='Angle limit x',
+            default=True,
+            options={'ANIMATABLE'})
+
+        scene.jo_limit_ang_y = BoolProperty(
+            name='Y Angle',
+            description='Angle limit y',
+            default=True)
+
+        scene.jo_limit_ang_z = BoolProperty(
+            name='Z Angle',
+            description='Angle limit z',
+            default=True)
+
+        scene.jo_limit_ang_x_lower = FloatProperty(
+            name = "Lower",
+            description = "joint limit_ang_x_lower",
+            default = -0.785398,
+            subtype = 'ANGLE')
+
+        scene.jo_limit_ang_y_lower = FloatProperty(
+            name = "Lower",
+            description = "joint limit_ang_y_lower",
+            default = -0.785398,
+            subtype = 'ANGLE')
+
+        scene.jo_limit_ang_z_lower = FloatProperty(
+            name = "Lower",
+            description = "joint limit_ang_z_lower",
+            default = -0.785398,
+            subtype = 'ANGLE')
+
+        scene.jo_limit_ang_x_upper = FloatProperty(
+            name = "Upper",
+            description = "joint limit_ang_x_upper",
+            default = 0.785398,
+            subtype = 'ANGLE')
+
+        scene.jo_limit_ang_y_upper = FloatProperty(
+            name = "Upper",
+            description = "joint limit_ang_y_upper",
+            default = 0.785398,
+            subtype = 'ANGLE')
+
+        scene.jo_limit_ang_z_upper = FloatProperty(
+            name = "Upper",
+            description = "joint limit_ang_z_upper",
+            default = 0.785398,
+            subtype = 'ANGLE')
+
+
+        scene.jo_use_spring_x = BoolProperty(
+            name='X',
+            description='use spring x',
+            default=False)
+
+        scene.jo_use_spring_y = BoolProperty(
+            name='Y',
+            description='use spring y',
+            default=False)
+
+        scene.jo_use_spring_z = BoolProperty(
+            name='Z',
+            description='use spring z',
+            default=False)
+
+        scene.jo_spring_stiffness_x = FloatProperty(
+            name = "Stiffness",
+            description = "Stiffness on the X Axis",
+            default = 10.000,
+            subtype = 'NONE',
+            min = 0)
+
+        scene.jo_spring_stiffness_y = FloatProperty(
+            name = "Stiffness",
+            description = "Stiffness on the Y Axis",
+            default = 10.000,
+            subtype = 'NONE',
+            min = 0)
+
+        scene.jo_spring_stiffness_z = FloatProperty(
+            name = "Stiffness",
+            description = "Stiffness on the Z Axis",
+            default = 10.000,
+            subtype = 'NONE',
+            min = 0)
+
+        scene.jo_spring_damping_x = FloatProperty(
+            name = "Damping X",
+            description = "Damping on the X Axis",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+        scene.jo_spring_damping_y = FloatProperty(
+            name = "Damping Y",
+            description = "Damping on the Y Axis",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+        scene.jo_spring_damping_z = FloatProperty(
+            name = "Damping Z",
+            description = "Damping on the Z Axis",
+            default = 0.5,
+            subtype = 'NONE',
+            min = 0,
+            max = 1)
+
+
+        scene.jo_constraint_object = BoolProperty(
+            name='Auto Constraint Object',
+            description='Constraint Object',
+            default=True)
+
+        scene.rc_rootbody_passive = BoolProperty(
+            name='Passive',
+            description='Rigid Body Type Passive',
+            default=True)
+
+        scene.rc_add_pole_rootbody = BoolProperty(
+            name='Add Pole Object',
+            description='Add Pole Object',
+            default=True)
+
+        scene.rc_rootbody_animated = BoolProperty(
+            name='animated',
+            description='Root Rigid Body sets animated',
+            default=True)
+
+        scene.rc_parent_armature = BoolProperty(
+            name='Parent to armature',
+            description='Parent to armature',
+            default=True)
+
+def del_props():
+    scene = bpy.types.Scene
+    del scene.rb_shape
+
+
 
 # show UI
 ### add Tool Panel
@@ -12,15 +310,145 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
     bl_label = "Soft Engine"
 
 
+    ###instance UProp.rigidbody
+#    p_rb_shape = UProp.rb_shape
+#    p_rb_dim = UProp.rc_dim
+#    p_rb_mass = UProp.rc_mass
+#    p_rb_friction = UProp.rc_friction
+#    p_rb_bounciness = UProp.rc_bounciness
+#    p_rb_translation = UProp.rc_translation
+#    p_rb_rotation = UProp.rc_rotation
+#    p_rb_add_pole_rootbody = UProp.rc_add_pole_rootbody
+#    p_rb_parent_armature = UProp.rc_parent_armature
+
+#    init_joint_dimX = 0.33
+#    init_joint_dimY = 0.33
+#    init_joint_dimZ = 0.33
+
+#    ###instance UProp.joint
+#    joint_type = UProp.jo_type
+#    joint_dim = UProp.jo_dim
+#    joint_Axis_limit_x = UProp.jo_limit_lin_x
+#    joint_Axis_limit_y = UProp.jo_limit_lin_y
+#    joint_Axis_limit_z = UProp.jo_limit_lin_z
+#    joint_Axis_limit_x_lower = UProp.jo_limit_lin_x_lower
+#    joint_Axis_limit_y_lower = UProp.jo_limit_lin_y_lower
+#    joint_Axis_limit_z_lower = UProp.jo_limit_lin_z_lower
+#    joint_Axis_limit_x_upper = UProp.jo_limit_lin_x_upper
+#    joint_Axis_limit_y_upper = UProp.jo_limit_lin_y_upper
+#    joint_Axis_limit_z_upper = UProp.jo_limit_lin_z_upper
+#    joint_Angle_limit_x = UProp.jo_limit_ang_x
+#    joint_Angle_limit_y = UProp.jo_limit_ang_y
+#    joint_Angle_limit_z = UProp.jo_limit_ang_z
+#    joint_Angle_limit_x_lower = UProp.jo_limit_ang_x_lower
+#    joint_Angle_limit_y_lower = UProp.jo_limit_ang_y_lower
+#    joint_Angle_limit_z_lower = UProp.jo_limit_ang_z_lower
+#    joint_Angle_limit_x_upper = UProp.jo_limit_ang_x_upper
+#    joint_Angle_limit_y_upper = UProp.jo_limit_ang_y_upper
+#    joint_Angle_limit_z_upper = UProp.jo_limit_ang_z_upper
+#    joint_use_spring_x = UProp.jo_use_spring_x
+#    joint_use_spring_y = UProp.jo_use_spring_y
+#    joint_use_spring_z = UProp.jo_use_spring_z
+#    joint_spring_stiffness_x = UProp.jo_spring_stiffness_x
+#    joint_spring_stiffness_y = UProp.jo_spring_stiffness_y
+#    joint_spring_stiffness_z = UProp.jo_spring_stiffness_z
+#    joint_spring_damping_x = UProp.jo_spring_damping_x
+#    joint_spring_damping_y = UProp.jo_spring_damping_y
+#    joint_spring_damping_z = UProp.jo_spring_damping_z
+#    joint_constraint_object = UProp.jo_constraint_object
+
+
     @classmethod
     def poll(cls, context):
         return context.mode in {'EDIT_MESH'}
 
     def draw(self, context):
+        scene = context.scene
         layout = self.layout
 
         col = layout.column(align=True)
         col.operator(RBG_OT_AddBonesOnEdges.bl_idname, text="Adding Bones On Edges", icon='BONE_DATA')
+
+        ###Rigid Body Object
+        layout = self.layout
+
+        box = layout.box()
+        box.prop(scene, 'rb_shape')
+        box.prop(scene, 'rc_dim')
+        box.prop(scene, 'rc_mass')
+        box.prop(scene, 'rc_friction')
+        box.prop(scene, 'rc_bounciness')
+        box.prop(scene, 'rc_translation')
+        box.prop(scene, 'rc_rotation')
+
+
+        #Joint Object
+        layout = self.layout
+        box = layout.box()
+        box.prop(scene, 'jo_type')
+        box.prop(scene, 'jo_constraint_object')
+        box.prop(scene, 'rc_add_pole_rootbody')
+        box.prop(scene, 'rc_parent_armature')
+        box.prop(scene, 'jo_dim')
+
+        col = box.column(align=True)
+        col.label(text="Limits:")
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_limit_lin_x', toggle=True)
+        sub.prop(scene, 'jo_limit_lin_x_lower')
+        sub.prop(scene, 'jo_limit_lin_x_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_limit_lin_y', toggle=True)
+        sub.prop(scene, 'jo_limit_lin_y_lower')
+        sub.prop(scene, 'jo_limit_lin_y_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_limit_lin_z', toggle=True)
+        sub.prop(scene, 'jo_limit_lin_z_lower')
+        sub.prop(scene, 'jo_limit_lin_z_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_limit_ang_x', toggle=True)
+        sub.prop(scene, 'jo_limit_ang_x_lower')
+        sub.prop(scene, 'jo_limit_ang_x_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_limit_ang_y', toggle=True)
+        sub.prop(scene, 'jo_limit_ang_y_lower')
+        sub.prop(scene, 'jo_limit_ang_y_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_limit_ang_z', toggle=True)
+        sub.prop(scene, 'jo_limit_ang_z_lower')
+        sub.prop(scene, 'jo_limit_ang_z_upper')
+
+        col.label(text="Springs:")
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_use_spring_x', toggle=True)
+        sub.prop(scene, 'jo_spring_stiffness_x')
+        sub.prop(scene, 'jo_spring_damping_x')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_use_spring_y', toggle=True)
+        sub.prop(scene, 'jo_spring_stiffness_y')
+        sub.prop(scene, 'jo_spring_damping_y')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'jo_use_spring_z', toggle=True)
+        sub.prop(scene, 'jo_spring_stiffness_z')
+        sub.prop(scene, 'jo_spring_damping_z')
 
 
 # add bones
@@ -64,6 +492,8 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
         for v in vlist:
             wvco = mw @ v.co
             bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=8, radius=0.1, calc_uvs=False, enter_editmode=False, align='WORLD', location=wvco, rotation=(0.0, 0.0, 0.0))
+            bpy.ops.object.transform_apply(location=True, rotation=False, scale=False)
+
             
             #view setting
             rc = bpy.context.active_object
@@ -225,13 +655,15 @@ classes = [
 
 # クラスの登録
 def register():
-     for cls in classes:
-         bpy.utils.register_class(cls)
+    for cls in classes:
+        bpy.utils.register_class(cls)
+    user_props()
 
 # クラスの登録解除
 def unregister():
-     for cls in classes:
-         bpy.utils.unregister_class(cls)
+    del_props()
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
 
 
 # main
