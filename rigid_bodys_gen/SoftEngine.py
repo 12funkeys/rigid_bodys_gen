@@ -2,6 +2,8 @@ import bpy
 from bpy.props import *
 import bmesh
 import numpy as np
+import sys
+from time import sleep
 
 bl_info = {
     "name": "soft engine",
@@ -26,9 +28,9 @@ shapes = [
         ('SPHERE', 'Sphere', 'Sphere'),
         ('BOX', 'Box', 'Box')]
 
-types = [('MOTOR', 'Motor', 'Motor'),
-            ('GENERIC_SPRING', 'Generic Spring', 'Generic Spring'),
-            ('GENERIC', 'Generic', 'Generic')]
+types = [
+        ('GENERIC_SPRING', 'Generic Spring', 'Generic Spring'),
+        ('GENERIC', 'Generic', 'Generic')]
 
 ### user prop
 def user_props():
@@ -47,6 +49,13 @@ def user_props():
             unit = 'NONE',
             min = 0,
             max = 5)
+
+        scene.rc_rudius = FloatProperty(
+            name = "Rudius",
+            description = "rigid body rudius",
+            default = 0.1,
+            subtype = 'NONE',
+            min = 0.001,)
 
         scene.rc_mass = FloatProperty(
             name = "Mass",
@@ -92,16 +101,7 @@ def user_props():
             name='Type',
             description='Choose Contstraint Type',
             items=types,
-            default='GENERIC_SPRING')
-
-        scene.jo_dim = FloatVectorProperty(
-            name = "joint Dimensions",
-            description = "joint Dimensions XYZ",
-            default = (1, 1, 1),
-            subtype = 'XYZ',
-            unit = 'NONE',
-            min = 0,
-            max = 5)
+            default='GENERIC')
 
         scene.jo_limit_lin_x = BoolProperty(
             name='X Axis',
@@ -279,20 +279,6 @@ def user_props():
             description='Rigid Body Type Passive',
             default=True)
 
-        scene.rc_add_pole_rootbody = BoolProperty(
-            name='Add Pole Object',
-            description='Add Pole Object',
-            default=True)
-
-        scene.rc_rootbody_animated = BoolProperty(
-            name='animated',
-            description='Root Rigid Body sets animated',
-            default=True)
-
-        scene.rc_parent_armature = BoolProperty(
-            name='Parent to armature',
-            description='Parent to armature',
-            default=True)
 
 def del_props():
     scene = bpy.types.Scene
@@ -309,53 +295,6 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
     # bl_context = "mesh_edit"
     bl_label = "Soft Engine"
 
-
-    ###instance UProp.rigidbody
-#    p_rb_shape = UProp.rb_shape
-#    p_rb_dim = UProp.rc_dim
-#    p_rb_mass = UProp.rc_mass
-#    p_rb_friction = UProp.rc_friction
-#    p_rb_bounciness = UProp.rc_bounciness
-#    p_rb_translation = UProp.rc_translation
-#    p_rb_rotation = UProp.rc_rotation
-#    p_rb_add_pole_rootbody = UProp.rc_add_pole_rootbody
-#    p_rb_parent_armature = UProp.rc_parent_armature
-
-#    init_joint_dimX = 0.33
-#    init_joint_dimY = 0.33
-#    init_joint_dimZ = 0.33
-
-#    ###instance UProp.joint
-#    joint_type = UProp.jo_type
-#    joint_dim = UProp.jo_dim
-#    joint_Axis_limit_x = UProp.jo_limit_lin_x
-#    joint_Axis_limit_y = UProp.jo_limit_lin_y
-#    joint_Axis_limit_z = UProp.jo_limit_lin_z
-#    joint_Axis_limit_x_lower = UProp.jo_limit_lin_x_lower
-#    joint_Axis_limit_y_lower = UProp.jo_limit_lin_y_lower
-#    joint_Axis_limit_z_lower = UProp.jo_limit_lin_z_lower
-#    joint_Axis_limit_x_upper = UProp.jo_limit_lin_x_upper
-#    joint_Axis_limit_y_upper = UProp.jo_limit_lin_y_upper
-#    joint_Axis_limit_z_upper = UProp.jo_limit_lin_z_upper
-#    joint_Angle_limit_x = UProp.jo_limit_ang_x
-#    joint_Angle_limit_y = UProp.jo_limit_ang_y
-#    joint_Angle_limit_z = UProp.jo_limit_ang_z
-#    joint_Angle_limit_x_lower = UProp.jo_limit_ang_x_lower
-#    joint_Angle_limit_y_lower = UProp.jo_limit_ang_y_lower
-#    joint_Angle_limit_z_lower = UProp.jo_limit_ang_z_lower
-#    joint_Angle_limit_x_upper = UProp.jo_limit_ang_x_upper
-#    joint_Angle_limit_y_upper = UProp.jo_limit_ang_y_upper
-#    joint_Angle_limit_z_upper = UProp.jo_limit_ang_z_upper
-#    joint_use_spring_x = UProp.jo_use_spring_x
-#    joint_use_spring_y = UProp.jo_use_spring_y
-#    joint_use_spring_z = UProp.jo_use_spring_z
-#    joint_spring_stiffness_x = UProp.jo_spring_stiffness_x
-#    joint_spring_stiffness_y = UProp.jo_spring_stiffness_y
-#    joint_spring_stiffness_z = UProp.jo_spring_stiffness_z
-#    joint_spring_damping_x = UProp.jo_spring_damping_x
-#    joint_spring_damping_y = UProp.jo_spring_damping_y
-#    joint_spring_damping_z = UProp.jo_spring_damping_z
-#    joint_constraint_object = UProp.jo_constraint_object
 
 
     @classmethod
@@ -374,7 +313,8 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
 
         box = layout.box()
         box.prop(scene, 'rb_shape')
-        box.prop(scene, 'rc_dim')
+#        box.prop(scene, 'rc_dim')
+        box.prop(scene, 'rc_rudius')
         box.prop(scene, 'rc_mass')
         box.prop(scene, 'rc_friction')
         box.prop(scene, 'rc_bounciness')
@@ -386,10 +326,6 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
         layout = self.layout
         box = layout.box()
         box.prop(scene, 'jo_type')
-        box.prop(scene, 'jo_constraint_object')
-        box.prop(scene, 'rc_add_pole_rootbody')
-        box.prop(scene, 'rc_parent_armature')
-        box.prop(scene, 'jo_dim')
 
         col = box.column(align=True)
         col.label(text="Limits:")
@@ -466,6 +402,7 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
     ###
     def execute(self, context):
         
+        scene = context.scene
         object = bpy.context.object
         mesh = object.data
         
@@ -489,10 +426,16 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 #        self.report({'INFO'}, str(singleVerts))
            
        #create Rigidbody object
+       
+        sys.stdout.write("Soft Engine Working..."+"\n")
+        sys.stdout.flush()
+        
+        idx = 0
         for v in vlist:
+            idx += 1
             wvco = mw @ v.co
-            bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=8, radius=0.1, calc_uvs=False, enter_editmode=False, align='WORLD', location=wvco, rotation=(0.0, 0.0, 0.0))
-            bpy.ops.object.transform_apply(location=True, rotation=False, scale=False)
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=8, radius=scene.rc_rudius, calc_uvs=False, enter_editmode=False, align='WORLD', location=wvco, rotation=(0.0, 0.0, 0.0))
+#            bpy.ops.object.transform_apply(location=True, rotation=False, scale=False)
 
             
             #view setting
@@ -515,11 +458,19 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
                 rc.rigid_body.kinematic = False
                 
             rc.rigid_body.collision_shape = "SPHERE"
-            rc.rigid_body.mass = 1.0
-            rc.rigid_body.friction = 0.5
-            rc.rigid_body.restitution = 0.5
-            rc.rigid_body.linear_damping = 0.5
-            rc.rigid_body.angular_damping = 0.5 
+            rc.rigid_body.mass = scene.rc_mass
+            rc.rigid_body.friction = scene.rc_friction
+            rc.rigid_body.restitution = scene.rc_bounciness
+            rc.rigid_body.linear_damping = scene.rc_translation
+            rc.rigid_body.angular_damping = scene.rc_rotation
+            
+            msg = "PROSESS 1/4: %i of %i" % (idx, len(vlist)-1)
+            sys.stdout.write(msg + chr(8) * len(msg))
+            sys.stdout.flush()
+            sleep(0.02)
+        
+        sys.stdout.write("PROSESS 1/4 DONE" + " "*len(msg)+"\n")
+        sys.stdout.flush()
 
         #create bones
         object.select_set(state=True)
@@ -537,7 +488,9 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 
         #new CHILD_OF
         bpy.ops.object.posemode_toggle()
+        idx = 0
         for v in vlist:
+            idx += 1
                        
             co = obamt[0].pose.bones['softbone.' + str(v.index)].constraints.new("CHILD_OF")
             tgt = bpy.data.objects['rc.' + str(v.index)]
@@ -547,8 +500,19 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
             obamt[0].update_tag(refresh={'OBJECT'})
 #            bpy.context.scene.update()
 
+            msg = "PROSESS 2/4: %i of %i" % (idx, len(vlist)-1)
+            sys.stdout.write(msg + chr(8) * len(msg))
+            sys.stdout.flush()
+            sleep(0.02)
+        
+        sys.stdout.write("PROSESS 2/4 DONE" + " "*len(msg)+"\n")
+        sys.stdout.flush()
+
         bpy.ops.object.mode_set(mode='OBJECT')
+        
+        idx = 0
         for e in elist:
+            idx += 1
 #            print(e)
 #            self.report({'INFO'}, str(e))
 #            self.report({'INFO'}, str(e.verts[0].co))
@@ -565,7 +529,7 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
             ### Set Rigid Body Joint
             jc = bpy.context.active_object
             bpy.ops.rigidbody.constraint_add()
-            jc.rigid_body_constraint.type = 'GENERIC' #GENERIC_SPRING
+            jc.rigid_body_constraint.type = scene.jo_type
             jc.rigid_body_constraint.use_breaking = False
             jc.rigid_body_constraint.disable_collisions = False
             jc.rigid_body_constraint.use_override_solver_iterations = True
@@ -574,25 +538,25 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
             jc.rigid_body_constraint.object1 = bpy.data.objects['rc.' + str(e.verts[0].index)]
             jc.rigid_body_constraint.object2 = bpy.data.objects['rc.' + str(e.verts[1].index)]
   
-            jc.rigid_body_constraint.use_limit_lin_x = True
-            jc.rigid_body_constraint.use_limit_lin_y = True
-            jc.rigid_body_constraint.use_limit_lin_z = True
-            jc.rigid_body_constraint.limit_lin_x_lower = 0
-            jc.rigid_body_constraint.limit_lin_y_lower = 0
-            jc.rigid_body_constraint.limit_lin_z_lower = 0
-            jc.rigid_body_constraint.limit_lin_x_upper = 0
-            jc.rigid_body_constraint.limit_lin_y_upper = 0
-            jc.rigid_body_constraint.limit_lin_z_upper = 0
+            jc.rigid_body_constraint.use_limit_lin_x = scene.jo_limit_lin_x
+            jc.rigid_body_constraint.use_limit_lin_y = scene.jo_limit_lin_y
+            jc.rigid_body_constraint.use_limit_lin_z = scene.jo_limit_lin_z
+            jc.rigid_body_constraint.limit_lin_x_lower = scene.jo_limit_lin_x_lower
+            jc.rigid_body_constraint.limit_lin_y_lower = scene.jo_limit_lin_y_lower
+            jc.rigid_body_constraint.limit_lin_z_lower = scene.jo_limit_lin_z_lower
+            jc.rigid_body_constraint.limit_lin_x_upper = scene.jo_limit_lin_x_upper
+            jc.rigid_body_constraint.limit_lin_y_upper = scene.jo_limit_lin_y_upper
+            jc.rigid_body_constraint.limit_lin_z_upper = scene.jo_limit_lin_z_upper
 
-            jc.rigid_body_constraint.use_limit_ang_x = True
-            jc.rigid_body_constraint.use_limit_ang_y = True
-            jc.rigid_body_constraint.use_limit_ang_z = True
-            jc.rigid_body_constraint.limit_ang_x_lower = -0.785398
-            jc.rigid_body_constraint.limit_ang_y_lower = -0.785398
-            jc.rigid_body_constraint.limit_ang_z_lower = -0.785398
-            jc.rigid_body_constraint.limit_ang_x_upper = 0.785398
-            jc.rigid_body_constraint.limit_ang_y_upper = 0.785398
-            jc.rigid_body_constraint.limit_ang_z_upper = 0.785398
+            jc.rigid_body_constraint.use_limit_ang_x = scene.jo_limit_ang_x
+            jc.rigid_body_constraint.use_limit_ang_y = scene.jo_limit_ang_y
+            jc.rigid_body_constraint.use_limit_ang_z = scene.jo_limit_ang_z
+            jc.rigid_body_constraint.limit_ang_x_lower = scene.jo_limit_ang_x_lower
+            jc.rigid_body_constraint.limit_ang_y_lower = scene.jo_limit_ang_y_lower
+            jc.rigid_body_constraint.limit_ang_z_lower = scene.jo_limit_ang_z_lower
+            jc.rigid_body_constraint.limit_ang_x_upper = scene.jo_limit_ang_x_upper
+            jc.rigid_body_constraint.limit_ang_y_upper = scene.jo_limit_ang_y_upper
+            jc.rigid_body_constraint.limit_ang_z_upper = scene.jo_limit_ang_z_upper
 
 #                jc.rigid_body_constraint.use_spring_x = self.joint_use_spring_x
 #                jc.rigid_body_constraint.use_spring_y = self.joint_use_spring_y
@@ -605,13 +569,32 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 #                jc.rigid_body_constraint.spring_damping_z = self.joint_spring_damping_z
 #  
     
+            msg = "PROSESS 3/4: %i of %i" % (idx, len(elist)-1)
+            sys.stdout.write(msg + chr(8) * len(msg))
+            sys.stdout.flush()
+            sleep(0.02)
+        
+        sys.stdout.write("PROSESS 3/4 DONE" + " "*len(msg)+"\n")
+        sys.stdout.flush()
+    
+        idx = 0
         for v in vindex:
+            idx += 1
+            
             #make vertex group
             bpy.context.view_layer.objects.active = object
             bpy.ops.object.mode_set(mode='OBJECT')
             vg = object.vertex_groups.new(name='softbone.' + str(v))
             vg.add([int(v)], 1.0, "ADD")
 
+            msg = "PROSESS 4/4: %i of %i" % (idx, len(vindex)-1)
+            sys.stdout.write(msg + chr(8) * len(msg))
+            sys.stdout.flush()
+            sleep(0.02)
+        
+        sys.stdout.write("PROSESS 4/4 DONE" + " "*len(msg)+"\n")
+        sys.stdout.write("COMPLETED!" + " "*len(msg)+"\n")
+        sys.stdout.flush()
 
 #                createBones(amt, e.verts)
 #                
