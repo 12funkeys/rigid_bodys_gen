@@ -558,16 +558,16 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
             jc.rigid_body_constraint.limit_ang_y_upper = scene.jo_limit_ang_y_upper
             jc.rigid_body_constraint.limit_ang_z_upper = scene.jo_limit_ang_z_upper
 
-#                jc.rigid_body_constraint.use_spring_x = self.joint_use_spring_x
-#                jc.rigid_body_constraint.use_spring_y = self.joint_use_spring_y
-#                jc.rigid_body_constraint.use_spring_z = self.joint_use_spring_z
-#                jc.rigid_body_constraint.spring_stiffness_x = self.joint_spring_stiffness_x
-#                jc.rigid_body_constraint.spring_stiffness_y = self.joint_spring_stiffness_y
-#                jc.rigid_body_constraint.spring_stiffness_z = self.joint_spring_stiffness_z
-#                jc.rigid_body_constraint.spring_damping_x = self.joint_spring_damping_x
-#                jc.rigid_body_constraint.spring_damping_y = self.joint_spring_damping_y
-#                jc.rigid_body_constraint.spring_damping_z = self.joint_spring_damping_z
-#  
+            jc.rigid_body_constraint.use_spring_x = scene.jo_use_spring_x
+            jc.rigid_body_constraint.use_spring_y = scene.jo_use_spring_y
+            jc.rigid_body_constraint.use_spring_z = scene.jo_use_spring_z
+            jc.rigid_body_constraint.spring_stiffness_x = scene.jo_spring_stiffness_x
+            jc.rigid_body_constraint.spring_stiffness_y = scene.jo_spring_stiffness_y
+            jc.rigid_body_constraint.spring_stiffness_z = scene.jo_spring_stiffness_z
+            jc.rigid_body_constraint.spring_damping_x = scene.jo_spring_damping_x
+            jc.rigid_body_constraint.spring_damping_y = scene.jo_spring_damping_y
+            jc.rigid_body_constraint.spring_damping_z = scene.jo_spring_damping_z
+  
     
             msg = "PROSESS 3/4: %i of %i" % (idx, len(elist)-1)
             sys.stdout.write(msg + chr(8) * len(msg))
