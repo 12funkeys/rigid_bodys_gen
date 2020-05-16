@@ -288,7 +288,7 @@ def del_props():
 
 # show UI
 ### add Tool Panel
-class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
+class RBG_PT_MenuSoftEngine(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Rigid Body Gen"
@@ -306,7 +306,7 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
         layout = self.layout
 
         col = layout.column(align=True)
-        col.operator(RBG_OT_AddBonesOnEdges.bl_idname, text="Adding Bones On Edges", icon='BONE_DATA')
+        col.operator(RBG_OT_ExeSoftEngine.bl_idname, text="Execute Soft Engine", icon='PLAY')
 
         ###Rigid Body Object
         layout = self.layout
@@ -388,7 +388,7 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
 
 
 # add bones
-class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
+class RBG_OT_ExeSoftEngine(bpy.types.Operator):
 
     bl_idname = "bone_gen.add_bones_onedges"
     bl_label = "Execute Soft Engine"
@@ -632,8 +632,8 @@ def createBones(amt, verts):
 
 
 classes = [
-     RBG_PT_MenuAddBonesTools,
-     RBG_OT_AddBonesOnEdges
+     RBG_PT_MenuSoftEngine,
+     RBG_OT_ExeSoftEngine
 ]
 
 # クラスの登録
