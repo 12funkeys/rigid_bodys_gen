@@ -76,7 +76,7 @@ class RBG_PT_MenuRigidBodyTools(bpy.types.Panel):
 
 ### add MainMenu
 class RBG_MT_MenuRigidBodys(bpy.types.Menu):
-    bl_idname = "menu_MT_create_rigidbodys"
+    # bl_idname = "menu_MT_create_rigidbodys"
     bl_label = "Make Rigid Bodys"
     bl_description = "make rigibodys & constraint"
 
@@ -104,268 +104,273 @@ class RBG_MT_MenuRigidBodys(bpy.types.Menu):
         bpy.app.translations.unregister(__name__)
 
 ### user prop
-class UProp:
+def user_props():
+    scene = bpy.types.Scene
 
-        rb_shape = EnumProperty(
-            name='Shape',
-            description='Choose Rigid Body Shape',
-            items=shapes,
-            default='CAPSULE')
+    scene.rbg_rb_shape = EnumProperty(
+        name='Shape',
+        description='Choose Rigid Body Shape',
+        items=shapes,
+        default='CAPSULE')
 
-        rc_dim = FloatVectorProperty(
-            name = "Dimensions",
-            description = "rigid body Dimensions XYZ",
-            default = (1, 1, 1),
-            subtype = 'XYZ',
-            unit = 'NONE',
-            min = 0,
-            max = 5)
+    scene.rbg_rc_dim = FloatVectorProperty(
+        name = "Dimensions",
+        description = "rigid body Dimensions XYZ",
+        default = (1, 1, 1),
+        subtype = 'XYZ',
+        unit = 'NONE',
+        min = 0,
+        max = 5)
 
-        rc_mass = FloatProperty(
-            name = "Mass",
-            description = "rigid body mass",
-            default = 1.0,
-            subtype = 'NONE',
-            min = 0.001,)
+    scene.rbg_rc_mass = FloatProperty(
+        name = "Mass",
+        description = "rigid body mass",
+        default = 1.0,
+        subtype = 'NONE',
+        min = 0.001,)
 
-        rc_friction = FloatProperty(
-            name = "Friction",
-            description = "rigid body friction",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
+    scene.rbg_rc_friction = FloatProperty(
+        name = "Friction",
+        description = "rigid body friction",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
 
-        rc_bounciness = FloatProperty(
-            name = "Bounciness",
-            description = "rigid body bounciness",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
+    scene.rbg_rc_bounciness = FloatProperty(
+        name = "Bounciness",
+        description = "rigid body bounciness",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
 
-        rc_translation = FloatProperty(
-            name = "Translation",
-            description = "rigid body translation",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
+    scene.rbg_rc_translation = FloatProperty(
+        name = "Translation",
+        description = "rigid body translation",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
 
-        rc_rotation = FloatProperty(
-            name = "Rotation",
-            description = "rigid body rotation",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
-
-
-        jo_type = EnumProperty(
-            name='Type',
-            description='Choose Contstraint Type',
-            items=types,
-            default='GENERIC_SPRING')
-
-        jo_dim = FloatVectorProperty(
-            name = "joint Dimensions",
-            description = "joint Dimensions XYZ",
-            default = (1, 1, 1),
-            subtype = 'XYZ',
-            unit = 'NONE',
-            min = 0,
-            max = 5)
-
-        jo_limit_lin_x = BoolProperty(
-            name='X Axis',
-            description='limit x',
-            default=True,
-            options={'ANIMATABLE'})
-
-        jo_limit_lin_y = BoolProperty(
-            name='Y Axis',
-            description='limit y',
-            default=True)
-
-        jo_limit_lin_z = BoolProperty(
-            name='Z Axis',
-            description='limit z',
-            default=True)
-
-        jo_limit_lin_x_lower = FloatProperty(
-            name = "Lower",
-            description = "joint limit_lin_x_lower",
-            default = 0,
-            subtype = 'NONE')
-
-        jo_limit_lin_y_lower = FloatProperty(
-            name = "Lower",
-            description = "joint limit_lin_y_lower",
-            default = 0,
-            subtype = 'NONE')
-
-        jo_limit_lin_z_lower = FloatProperty(
-            name = "Lower",
-            description = "joint limit_lin_z_lower",
-            default = 0,
-            subtype = 'NONE')
-
-        jo_limit_lin_x_upper = FloatProperty(
-            name = "Upper",
-            description = "joint limit_lin_x_upper",
-            default = 0,
-            subtype = 'NONE')
-
-        jo_limit_lin_y_upper = FloatProperty(
-            name = "Upper",
-            description = "joint limit_lin_y_upper",
-            default = 0,
-            subtype = 'NONE')
-
-        jo_limit_lin_z_upper = FloatProperty(
-            name = "Upper",
-            description = "joint limit_lin_z_upper",
-            default = 0,
-            subtype = 'NONE')
-
-        jo_limit_ang_x = BoolProperty(
-            name='X Angle',
-            description='Angle limit x',
-            default=True,
-            options={'ANIMATABLE'})
-
-        jo_limit_ang_y = BoolProperty(
-            name='Y Angle',
-            description='Angle limit y',
-            default=True)
-
-        jo_limit_ang_z = BoolProperty(
-            name='Z Angle',
-            description='Angle limit z',
-            default=True)
-
-        jo_limit_ang_x_lower = FloatProperty(
-            name = "Lower",
-            description = "joint limit_ang_x_lower",
-            default = -0.785398,
-            subtype = 'ANGLE')
-
-        jo_limit_ang_y_lower = FloatProperty(
-            name = "Lower",
-            description = "joint limit_ang_y_lower",
-            default = -0.785398,
-            subtype = 'ANGLE')
-
-        jo_limit_ang_z_lower = FloatProperty(
-            name = "Lower",
-            description = "joint limit_ang_z_lower",
-            default = -0.785398,
-            subtype = 'ANGLE')
-
-        jo_limit_ang_x_upper = FloatProperty(
-            name = "Upper",
-            description = "joint limit_ang_x_upper",
-            default = 0.785398,
-            subtype = 'ANGLE')
-
-        jo_limit_ang_y_upper = FloatProperty(
-            name = "Upper",
-            description = "joint limit_ang_y_upper",
-            default = 0.785398,
-            subtype = 'ANGLE')
-
-        jo_limit_ang_z_upper = FloatProperty(
-            name = "Upper",
-            description = "joint limit_ang_z_upper",
-            default = 0.785398,
-            subtype = 'ANGLE')
+    scene.rbg_rc_rotation = FloatProperty(
+        name = "Rotation",
+        description = "rigid body rotation",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
 
 
-        jo_use_spring_x = BoolProperty(
-            name='X',
-            description='use spring x',
-            default=False)
+    scene.rbg_jo_type = EnumProperty(
+        name='Type',
+        description='Choose Contstraint Type',
+        items=types,
+        default='GENERIC_SPRING')
 
-        jo_use_spring_y = BoolProperty(
-            name='Y',
-            description='use spring y',
-            default=False)
+    scene.rbg_jo_dim = FloatVectorProperty(
+        name = "joint Dimensions",
+        description = "joint Dimensions XYZ",
+        default = (1, 1, 1),
+        subtype = 'XYZ',
+        unit = 'NONE',
+        min = 0,
+        max = 5)
 
-        jo_use_spring_z = BoolProperty(
-            name='Z',
-            description='use spring z',
-            default=False)
+    scene.rbg_jo_limit_lin_x = BoolProperty(
+        name='X Axis',
+        description='limit x',
+        default=True,
+        options={'ANIMATABLE'})
 
-        jo_spring_stiffness_x = FloatProperty(
-            name = "Stiffness",
-            description = "Stiffness on the X Axis",
-            default = 10.000,
-            subtype = 'NONE',
-            min = 0)
+    scene.rbg_jo_limit_lin_y = BoolProperty(
+        name='Y Axis',
+        description='limit y',
+        default=True)
 
-        jo_spring_stiffness_y = FloatProperty(
-            name = "Stiffness",
-            description = "Stiffness on the Y Axis",
-            default = 10.000,
-            subtype = 'NONE',
-            min = 0)
+    scene.rbg_jo_limit_lin_z = BoolProperty(
+        name='Z Axis',
+        description='limit z',
+        default=True)
 
-        jo_spring_stiffness_z = FloatProperty(
-            name = "Stiffness",
-            description = "Stiffness on the Z Axis",
-            default = 10.000,
-            subtype = 'NONE',
-            min = 0)
+    scene.rbg_jo_limit_lin_x_lower = FloatProperty(
+        name = "Lower",
+        description = "joint limit_lin_x_lower",
+        default = 0,
+        subtype = 'NONE')
 
-        jo_spring_damping_x = FloatProperty(
-            name = "Damping X",
-            description = "Damping on the X Axis",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
+    scene.rbg_jo_limit_lin_y_lower = FloatProperty(
+        name = "Lower",
+        description = "joint limit_lin_y_lower",
+        default = 0,
+        subtype = 'NONE')
 
-        jo_spring_damping_y = FloatProperty(
-            name = "Damping Y",
-            description = "Damping on the Y Axis",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
+    scene.rbg_jo_limit_lin_z_lower = FloatProperty(
+        name = "Lower",
+        description = "joint limit_lin_z_lower",
+        default = 0,
+        subtype = 'NONE')
 
-        jo_spring_damping_z = FloatProperty(
-            name = "Damping Z",
-            description = "Damping on the Z Axis",
-            default = 0.5,
-            subtype = 'NONE',
-            min = 0,
-            max = 1)
+    scene.rbg_jo_limit_lin_x_upper = FloatProperty(
+        name = "Upper",
+        description = "joint limit_lin_x_upper",
+        default = 0,
+        subtype = 'NONE')
+
+    scene.rbg_jo_limit_lin_y_upper = FloatProperty(
+        name = "Upper",
+        description = "joint limit_lin_y_upper",
+        default = 0,
+        subtype = 'NONE')
+
+    scene.rbg_jo_limit_lin_z_upper = FloatProperty(
+        name = "Upper",
+        description = "joint limit_lin_z_upper",
+        default = 0,
+        subtype = 'NONE')
+
+    scene.rbg_jo_limit_ang_x = BoolProperty(
+        name='X Angle',
+        description='Angle limit x',
+        default=True,
+        options={'ANIMATABLE'})
+
+    scene.rbg_jo_limit_ang_y = BoolProperty(
+        name='Y Angle',
+        description='Angle limit y',
+        default=True)
+
+    scene.rbg_jo_limit_ang_z = BoolProperty(
+        name='Z Angle',
+        description='Angle limit z',
+        default=True)
+
+    scene.rbg_jo_limit_ang_x_lower = FloatProperty(
+        name = "Lower",
+        description = "joint limit_ang_x_lower",
+        default = -0.785398,
+        subtype = 'ANGLE')
+
+    scene.rbg_jo_limit_ang_y_lower = FloatProperty(
+        name = "Lower",
+        description = "joint limit_ang_y_lower",
+        default = -0.785398,
+        subtype = 'ANGLE')
+
+    scene.rbg_jo_limit_ang_z_lower = FloatProperty(
+        name = "Lower",
+        description = "joint limit_ang_z_lower",
+        default = -0.785398,
+        subtype = 'ANGLE')
+
+    scene.rbg_jo_limit_ang_x_upper = FloatProperty(
+        name = "Upper",
+        description = "joint limit_ang_x_upper",
+        default = 0.785398,
+        subtype = 'ANGLE')
+
+    scene.rbg_jo_limit_ang_y_upper = FloatProperty(
+        name = "Upper",
+        description = "joint limit_ang_y_upper",
+        default = 0.785398,
+        subtype = 'ANGLE')
+
+    scene.rbg_jo_limit_ang_z_upper = FloatProperty(
+        name = "Upper",
+        description = "joint limit_ang_z_upper",
+        default = 0.785398,
+        subtype = 'ANGLE')
 
 
-        jo_constraint_object = BoolProperty(
-            name='Auto Constraint Object',
-            description='Constraint Object',
-            default=True)
+    scene.rbg_jo_use_spring_x = BoolProperty(
+        name='X',
+        description='use spring x',
+        default=False)
 
-        rc_rootbody_passive = BoolProperty(
-            name='Passive',
-            description='Rigid Body Type Passive',
-            default=True)
+    scene.rbg_jo_use_spring_y = BoolProperty(
+        name='Y',
+        description='use spring y',
+        default=False)
 
-        rc_add_pole_rootbody = BoolProperty(
-            name='Add Pole Object',
-            description='Add Pole Object',
-            default=True)
+    scene.rbg_jo_use_spring_z = BoolProperty(
+        name='Z',
+        description='use spring z',
+        default=False)
 
-        rc_rootbody_animated = BoolProperty(
-            name='animated',
-            description='Root Rigid Body sets animated',
-            default=True)
+    scene.rbg_jo_spring_stiffness_x = FloatProperty(
+        name = "Stiffness",
+        description = "Stiffness on the X Axis",
+        default = 10.000,
+        subtype = 'NONE',
+        min = 0)
 
-        rc_parent_armature = BoolProperty(
-            name='Parent to armature',
-            description='Parent to armature',
-            default=True)
+    scene.rbg_jo_spring_stiffness_y = FloatProperty(
+        name = "Stiffness",
+        description = "Stiffness on the Y Axis",
+        default = 10.000,
+        subtype = 'NONE',
+        min = 0)
+
+    scene.rbg_jo_spring_stiffness_z = FloatProperty(
+        name = "Stiffness",
+        description = "Stiffness on the Z Axis",
+        default = 10.000,
+        subtype = 'NONE',
+        min = 0)
+
+    scene.rbg_jo_spring_damping_x = FloatProperty(
+        name = "Damping X",
+        description = "Damping on the X Axis",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
+
+    scene.rbg_jo_spring_damping_y = FloatProperty(
+        name = "Damping Y",
+        description = "Damping on the Y Axis",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
+
+    scene.rbg_jo_spring_damping_z = FloatProperty(
+        name = "Damping Z",
+        description = "Damping on the Z Axis",
+        default = 0.5,
+        subtype = 'NONE',
+        min = 0,
+        max = 1)
+
+
+    scene.rbg_jo_constraint_object = BoolProperty(
+        name='Auto Constraint Object',
+        description='Constraint Object',
+        default=True)
+
+    scene.rbg_rc_rootbody_passive = BoolProperty(
+        name='Passive',
+        description='Rigid Body Type Passive',
+        default=True)
+
+    scene.rbg_rc_add_pole_rootbody = BoolProperty(
+        name='Add Pole Object',
+        description='Add Pole Object',
+        default=True)
+
+    scene.rbg_rc_rootbody_animated = BoolProperty(
+        name='animated',
+        description='Root Rigid Body sets animated',
+        default=True)
+
+    scene.rbg_rc_parent_armature = BoolProperty(
+        name='Parent to armature',
+        description='Parent to armature',
+        default=True)
+
+def del_props():
+    scene = bpy.types.Scene
+    del scene.rbg_rb_shape
 
 
 ### Create Rigid Bodys On Bones
@@ -381,40 +386,44 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
     init_rc_dimZ = 1.30
 
     ###instance UProp.rigidbody
-    p_rb_shape = UProp.rb_shape
-    p_rb_dim = UProp.rc_dim
-    p_rb_mass = UProp.rc_mass
-    p_rb_friction = UProp.rc_friction
-    p_rb_bounciness = UProp.rc_bounciness
-    p_rb_translation = UProp.rc_translation
-    p_rb_rotation = UProp.rc_rotation
-    p_rb_rootbody_passive = UProp.rc_rootbody_passive
-    p_rb_rootbody_animated = UProp.rc_rootbody_animated
-    p_rb_parent_armature = UProp.rc_parent_armature
+    # rbg_rb_shape = UProp.rb_shape
+    # rbg_rc_dim = UProp.rc_dim
+    # rbg_rc_mass = UProp.rc_mass
+    # rbg_rc_friction = UProp.rc_friction
+    # rbg_rc_bounciness = UProp.rc_bounciness
+    # rbg_rc_translation = UProp.rc_translation
+    # rbg_rc_rotation = UProp.rc_rotation
+    # rbg_rc_rootbody_passive = UProp.rc_rootbody_passive
+    # rbg_rc_rootbody_animated = UProp.rc_rootbody_animated
+    # rbg_rc_parent_armature = UProp.rc_parent_armature
 
 
-    def __init__(self):
-
-        self.p_rb_dim = (1, 1, 1)
+    # def __init__(self):
+    #
+    #     context.scene.rbg_rc_dim = (1, 1, 1)
 
     def draw(self, context):
 
+        scene = context.scene
+
         layout = self.layout
         box = layout.box()
-        box.prop(self, 'p_rb_shape')
-        box.prop(self, 'p_rb_dim')
-        box.prop(self, 'p_rb_mass')
-        box.prop(self, 'p_rb_friction')
-        box.prop(self, 'p_rb_bounciness')
+        box.prop(scene, 'rbg_rb_shape')
+        box.prop(scene, 'rbg_rc_dim')
+        box.prop(scene, 'rbg_rc_mass')
+        box.prop(scene, 'rbg_rc_friction')
+        box.prop(scene, 'rbg_rc_bounciness')
         box.label(text="Damping:")
-        box.prop(self, 'p_rb_translation')
-        box.prop(self, 'p_rb_rotation')
-        box.prop(self, 'p_rb_rootbody_passive')
-        box.prop(self, 'p_rb_rootbody_animated')
-        box.prop(self, 'p_rb_parent_armature')
+        box.prop(scene, 'rbg_rc_translation')
+        box.prop(scene, 'rbg_rc_rotation')
+        box.prop(scene, 'rbg_rc_rootbody_passive')
+        box.prop(scene, 'rbg_rc_rootbody_animated')
+        box.prop(scene, 'rbg_rc_parent_armature')
 
     ###
     def execute(self, context):
+
+        scene = context.scene
 
         ###selected Armature
         ob = bpy.context.active_object
@@ -452,9 +461,9 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
 
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0],
-                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1],
-                selected_bones.length * self.init_rc_dimZ * self.p_rb_dim[2]]
+                selected_bones.length * self.init_rc_dimX * scene.rbg_rc_dim[0],
+                selected_bones.length * self.init_rc_dimY * scene.rbg_rc_dim[1],
+                selected_bones.length * self.init_rc_dimZ * scene.rbg_rc_dim[2]]
 
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
@@ -462,18 +471,18 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             ### Set Rigid Body
             bpy.ops.rigidbody.object_add()
 
-            if self.p_rb_rootbody_passive == True:
+            if scene.rbg_rc_rootbody_passive == True:
                 bpy.context.object.rigid_body.type = "PASSIVE"
             else:
                 bpy.context.object.rigid_body.type = "ACTIVE"
 
-            bpy.context.object.rigid_body.collision_shape = self.p_rb_shape
-            bpy.context.object.rigid_body.kinematic = self.p_rb_rootbody_animated
-            bpy.context.object.rigid_body.mass = self.p_rb_mass
-            bpy.context.object.rigid_body.friction = self.p_rb_friction
-            bpy.context.object.rigid_body.restitution = self.p_rb_bounciness
-            bpy.context.object.rigid_body.linear_damping = self.p_rb_translation
-            bpy.context.object.rigid_body.angular_damping = self.p_rb_rotation
+            bpy.context.object.rigid_body.collision_shape = scene.rbg_rb_shape
+            bpy.context.object.rigid_body.kinematic = scene.rbg_rc_rootbody_animated
+            bpy.context.object.rigid_body.mass = scene.rbg_rc_mass
+            bpy.context.object.rigid_body.friction = scene.rbg_rc_friction
+            bpy.context.object.rigid_body.restitution = scene.rbg_rc_bounciness
+            bpy.context.object.rigid_body.linear_damping = scene.rbg_rc_translation
+            bpy.context.object.rigid_body.angular_damping = scene.rbg_rc_rotation
 
 
             ### Child OF
@@ -490,7 +499,7 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             bpy.context.scene.update_tag()
 
             #parent to armature
-            if self.p_rb_parent_armature == True:
+            if scene.rbg_rc_parent_armature == True:
                 rc.parent = ob
 
         ###clear object select
@@ -516,38 +525,40 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
     init_rc_dimZ = 1.30
 
     ###instance UProp.rigidbody
-    p_rb_shape = UProp.rb_shape
-    p_rb_dim = UProp.rc_dim
-    p_rb_mass = UProp.rc_mass
-    p_rb_friction = UProp.rc_friction
-    p_rb_bounciness = UProp.rc_bounciness
-    p_rb_translation = UProp.rc_translation
-    p_rb_rotation = UProp.rc_rotation
-    #p_rb_rootbody_passive = UProp.rc_rootbody_passive
-    p_rb_rootbody_animated = UProp.rc_rootbody_animated
-    p_rb_parent_armature = UProp.rc_parent_armature
+    # rbg_rb_shape = UProp.rb_shape
+    # rbg_rc_dim = UProp.rc_dim
+    # rbg_rc_mass = UProp.rc_mass
+    # rbg_rc_friction = UProp.rc_friction
+    # rbg_rc_bounciness = UProp.rc_bounciness
+    # rbg_rc_translation = UProp.rc_translation
+    # rbg_rc_rotation = UProp.rc_rotation
+    # #rbg_rc_rootbody_passive = UProp.rc_rootbody_passive
+    # rbg_rc_rootbody_animated = UProp.rc_rootbody_animated
+    # rbg_rc_parent_armature = UProp.rc_parent_armature
 
-    def __init__(self):
-
-        self.p_rb_dim = (1, 1, 1)
+    # def __init__(self):
+    #
+    #     context.scene.rbg_rc_dim = (1, 1, 1)
 
     def draw(self, context):
 
+        scene = context.scene
         layout = self.layout
         box = layout.box()
-        box.prop(self, 'p_rb_shape')
-        box.prop(self, 'p_rb_dim')
-        box.prop(self, 'p_rb_mass')
-        box.prop(self, 'p_rb_friction')
-        box.prop(self, 'p_rb_bounciness')
-        box.prop(self, 'p_rb_translation')
-        box.prop(self, 'p_rb_rotation')
-        box.prop(self, 'p_rb_rootbody_animated')
-        box.prop(self, 'p_rb_parent_armature')
+        box.prop(scene, 'rbg_rb_shape')
+        box.prop(scene, 'rbg_rc_dim')
+        box.prop(scene, 'rbg_rc_mass')
+        box.prop(scene, 'rbg_rc_friction')
+        box.prop(scene, 'rbg_rc_bounciness')
+        box.prop(scene, 'rbg_rc_translation')
+        box.prop(scene, 'rbg_rc_rotation')
+        box.prop(scene, 'rbg_rc_rootbody_animated')
+        box.prop(scene, 'rbg_rc_parent_armature')
 
     ###
     def execute(self, context):
 
+        scene = context.scene
         ###selected Armature
         ob = bpy.context.active_object
         #self.report({'INFO'}, ob.data)
@@ -581,9 +592,9 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
 
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0],
-                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1],
-                selected_bones.length * self.init_rc_dimZ * self.p_rb_dim[2]]
+                selected_bones.length * self.init_rc_dimX * scene.rbg_rc_dim[0],
+                selected_bones.length * self.init_rc_dimY * scene.rbg_rc_dim[1],
+                selected_bones.length * self.init_rc_dimZ * scene.rbg_rc_dim[2]]
 
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
@@ -592,13 +603,13 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             bpy.ops.rigidbody.object_add()
 
             bpy.context.object.rigid_body.type = "ACTIVE"
-            bpy.context.object.rigid_body.collision_shape = self.p_rb_shape
-            bpy.context.object.rigid_body.kinematic = self.p_rb_rootbody_animated
-            bpy.context.object.rigid_body.mass = self.p_rb_mass
-            bpy.context.object.rigid_body.friction = self.p_rb_friction
-            bpy.context.object.rigid_body.restitution = self.p_rb_bounciness
-            bpy.context.object.rigid_body.linear_damping = self.p_rb_translation
-            bpy.context.object.rigid_body.angular_damping = self.p_rb_rotation
+            bpy.context.object.rigid_body.collision_shape = scene.rbg_rb_shape
+            bpy.context.object.rigid_body.kinematic = scene.rbg_rc_rootbody_animated
+            bpy.context.object.rigid_body.mass = scene.rbg_rc_mass
+            bpy.context.object.rigid_body.friction = scene.rbg_rc_friction
+            bpy.context.object.rigid_body.restitution = scene.rbg_rc_bounciness
+            bpy.context.object.rigid_body.linear_damping = scene.rbg_rc_translation
+            bpy.context.object.rigid_body.angular_damping = scene.rbg_rc_rotation
 
             ### Child OF
             bpy.context.view_layer.objects.active = ob
@@ -625,7 +636,7 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
             bpy.ops.object.posemode_toggle()
 
             #parent to armature
-            if self.p_rb_parent_armature == True:
+            if scene.rbg_rc_parent_armature == True:
                 rc.parent = ob
 
         ###clear object select
@@ -646,52 +657,53 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
     bl_description = "add Add Joints on bones"
     bl_options = {'REGISTER', 'UNDO'}
 
-    init_joint_dimX = 0.33
-    init_joint_dimY = 0.33
-    init_joint_dimZ = 0.33
+    init_rbg_jo_dimX = 0.33
+    init_rbg_jo_dimY = 0.33
+    init_rbg_jo_dimZ = 0.33
 
     ###instance UProp.joint
-    joint_type = UProp.jo_type
-    joint_dim = UProp.jo_dim
-    joint_Axis_limit_x = UProp.jo_limit_lin_x
-    joint_Axis_limit_y = UProp.jo_limit_lin_y
-    joint_Axis_limit_z = UProp.jo_limit_lin_z
-    joint_Axis_limit_x_lower = UProp.jo_limit_lin_x_lower
-    joint_Axis_limit_y_lower = UProp.jo_limit_lin_y_lower
-    joint_Axis_limit_z_lower = UProp.jo_limit_lin_z_lower
-    joint_Axis_limit_x_upper = UProp.jo_limit_lin_x_upper
-    joint_Axis_limit_y_upper = UProp.jo_limit_lin_y_upper
-    joint_Axis_limit_z_upper = UProp.jo_limit_lin_z_upper
-    joint_Angle_limit_x = UProp.jo_limit_ang_x
-    joint_Angle_limit_y = UProp.jo_limit_ang_y
-    joint_Angle_limit_z = UProp.jo_limit_ang_z
-    joint_Angle_limit_x_lower = UProp.jo_limit_ang_x_lower
-    joint_Angle_limit_y_lower = UProp.jo_limit_ang_y_lower
-    joint_Angle_limit_z_lower = UProp.jo_limit_ang_z_lower
-    joint_Angle_limit_x_upper = UProp.jo_limit_ang_x_upper
-    joint_Angle_limit_y_upper = UProp.jo_limit_ang_y_upper
-    joint_Angle_limit_z_upper = UProp.jo_limit_ang_z_upper
-    joint_use_spring_x = UProp.jo_use_spring_x
-    joint_use_spring_y = UProp.jo_use_spring_y
-    joint_use_spring_z = UProp.jo_use_spring_z
-    joint_spring_stiffness_x = UProp.jo_spring_stiffness_x
-    joint_spring_stiffness_y = UProp.jo_spring_stiffness_y
-    joint_spring_stiffness_z = UProp.jo_spring_stiffness_z
-    joint_spring_damping_x = UProp.jo_spring_damping_x
-    joint_spring_damping_y = UProp.jo_spring_damping_y
-    joint_spring_damping_z = UProp.jo_spring_damping_z
-    p_rb_parent_armature = UProp.rc_parent_armature
+    # rbg_jo_type = UProp.jo_type
+    # rbg_jo_dim = UProp.jo_dim
+    # rbg_jo_limit_lin_x = UProp.jo_limit_lin_x
+    # rbg_jo_limit_lin_y = UProp.jo_limit_lin_y
+    # rbg_jo_limit_lin_z = UProp.jo_limit_lin_z
+    # rbg_jo_limit_lin_x_lower = UProp.jo_limit_lin_x_lower
+    # rbg_jo_limit_lin_y_lower = UProp.jo_limit_lin_y_lower
+    # rbg_jo_limit_lin_z_lower = UProp.jo_limit_lin_z_lower
+    # rbg_jo_limit_lin_x_upper = UProp.jo_limit_lin_x_upper
+    # rbg_jo_limit_lin_y_upper = UProp.jo_limit_lin_y_upper
+    # rbg_jo_limit_lin_z_upper = UProp.jo_limit_lin_z_upper
+    # rbg_jo_limit_ang_x = UProp.jo_limit_ang_x
+    # rbg_jo_limit_ang_y = UProp.jo_limit_ang_y
+    # rbg_jo_limit_ang_z = UProp.jo_limit_ang_z
+    # rbg_jo_limit_ang_x_lower = UProp.jo_limit_ang_x_lower
+    # rbg_jo_limit_ang_y_lower = UProp.jo_limit_ang_y_lower
+    # rbg_jo_limit_ang_z_lower = UProp.jo_limit_ang_z_lower
+    # rbg_jo_limit_ang_x_upper = UProp.jo_limit_ang_x_upper
+    # rbg_jo_limit_ang_y_upper = UProp.jo_limit_ang_y_upper
+    # rbg_jo_limit_ang_z_upper = UProp.jo_limit_ang_z_upper
+    # rbg_jo_use_spring_x = UProp.jo_use_spring_x
+    # rbg_jo_use_spring_y = UProp.jo_use_spring_y
+    # rbg_jo_use_spring_z = UProp.jo_use_spring_z
+    # rbg_jo_spring_stiffness_x = UProp.jo_spring_stiffness_x
+    # rbg_jo_spring_stiffness_y = UProp.jo_spring_stiffness_y
+    # rbg_jo_spring_stiffness_z = UProp.jo_spring_stiffness_z
+    # rbg_jo_spring_damping_x = UProp.jo_spring_damping_x
+    # rbg_jo_spring_damping_y = UProp.jo_spring_damping_y
+    # rbg_jo_spring_damping_z = UProp.jo_spring_damping_z
+    # rbg_rc_parent_armature = UProp.rc_parent_armature
 
-    def __init__(self):
-
-        self.joint_dim = (1, 1, 1)
+    # def __init__(self):
+    #
+    #     context.scene.rbg_jo_dim = (1, 1, 1)
 
     def draw(self, context):
 
+        scene = context.scene
         layout = self.layout
         box = layout.box()
-        box.prop(self, 'joint_type')
-        box.prop(self, 'joint_dim')
+        box.prop(scene, 'rbg_jo_type')
+        box.prop(scene, 'rbg_jo_dim')
 
 
         col = box.column(align=True)
@@ -699,67 +711,68 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Axis_limit_x', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_x_lower')
-        sub.prop(self, 'joint_Axis_limit_x_upper')
+        sub.prop(scene, 'rbg_jo_limit_lin_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_x_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Axis_limit_y', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_y_lower')
-        sub.prop(self, 'joint_Axis_limit_y_upper')
+        sub.prop(scene, 'rbg_jo_limit_lin_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_y_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Axis_limit_z', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_z_lower')
-        sub.prop(self, 'joint_Axis_limit_z_upper')
+        sub.prop(scene, 'rbg_jo_limit_lin_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_z_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Angle_limit_x', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_x_lower')
-        sub.prop(self, 'joint_Angle_limit_x_upper')
+        sub.prop(scene, 'rbg_jo_limit_ang_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_x_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Angle_limit_y', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_y_lower')
-        sub.prop(self, 'joint_Angle_limit_y_upper')
+        sub.prop(scene, 'rbg_jo_limit_ang_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_y_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Angle_limit_z', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_z_lower')
-        sub.prop(self, 'joint_Angle_limit_z_upper')
+        sub.prop(scene, 'rbg_jo_limit_ang_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_z_upper')
 
 
         col.label(text="Springs:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_use_spring_x', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_x')
-        sub.prop(self, 'joint_spring_damping_x')
+        sub.prop(scene, 'rbg_jo_use_spring_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_x')
+        sub.prop(scene, 'rbg_jo_spring_damping_x')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_use_spring_y', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_y')
-        sub.prop(self, 'joint_spring_damping_y')
+        sub.prop(scene, 'rbg_jo_use_spring_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_y')
+        sub.prop(scene, 'rbg_jo_spring_damping_y')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_use_spring_z', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_z')
-        sub.prop(self, 'joint_spring_damping_z')
+        sub.prop(scene, 'rbg_jo_use_spring_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_z')
+        sub.prop(scene, 'rbg_jo_spring_damping_z')
 
-        col.prop(self, 'p_rb_parent_armature')
+        col.prop(scene, 'rbg_rc_parent_armature')
 
 
     ###
     def execute(self, context):
 
+        scene = context.scene
         add_RigidBody_World()
 
         ###selected Armature
@@ -783,53 +796,53 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_joint_dimX * self.joint_dim[0],
-                selected_bones.length * self.init_joint_dimY * self.joint_dim[1],
-                selected_bones.length * self.init_joint_dimZ * self.joint_dim[2]]
+                selected_bones.length * self.init_rbg_jo_dimX * scene.rbg_jo_dim[0],
+                selected_bones.length * self.init_rbg_jo_dimY * scene.rbg_jo_dim[1],
+                selected_bones.length * self.init_rbg_jo_dimZ * scene.rbg_jo_dim[2]]
 
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
             ### Set Rigid Body
             bpy.ops.rigidbody.constraint_add()
-            bpy.context.object.rigid_body_constraint.type = self.joint_type
+            bpy.context.object.rigid_body_constraint.type = scene.rbg_jo_type
             bpy.context.object.rigid_body_constraint.use_breaking = False
             bpy.context.object.rigid_body_constraint.use_override_solver_iterations = True
             bpy.context.object.rigid_body_constraint.breaking_threshold = 10
             bpy.context.object.rigid_body_constraint.solver_iterations = 10
 
-            bpy.context.object.rigid_body_constraint.use_limit_lin_x = self.joint_Axis_limit_x
-            bpy.context.object.rigid_body_constraint.use_limit_lin_y = self.joint_Axis_limit_y
-            bpy.context.object.rigid_body_constraint.use_limit_lin_z = self.joint_Axis_limit_z
-            bpy.context.object.rigid_body_constraint.limit_lin_x_lower = self.joint_Axis_limit_x_lower
-            bpy.context.object.rigid_body_constraint.limit_lin_y_lower = self.joint_Axis_limit_y_lower
-            bpy.context.object.rigid_body_constraint.limit_lin_z_lower = self.joint_Axis_limit_z_lower
-            bpy.context.object.rigid_body_constraint.limit_lin_x_upper = self.joint_Axis_limit_x_upper
-            bpy.context.object.rigid_body_constraint.limit_lin_y_upper = self.joint_Axis_limit_y_upper
-            bpy.context.object.rigid_body_constraint.limit_lin_z_upper = self.joint_Axis_limit_z_upper
+            bpy.context.object.rigid_body_constraint.use_limit_lin_x = scene.rbg_jo_limit_lin_x
+            bpy.context.object.rigid_body_constraint.use_limit_lin_y = scene.rbg_jo_limit_lin_y
+            bpy.context.object.rigid_body_constraint.use_limit_lin_z = scene.rbg_jo_limit_lin_z
+            bpy.context.object.rigid_body_constraint.limit_lin_x_lower = scene.rbg_jo_limit_lin_x_lower
+            bpy.context.object.rigid_body_constraint.limit_lin_y_lower = scene.rbg_jo_limit_lin_y_lower
+            bpy.context.object.rigid_body_constraint.limit_lin_z_lower = scene.rbg_jo_limit_lin_z_lower
+            bpy.context.object.rigid_body_constraint.limit_lin_x_upper = scene.rbg_jo_limit_lin_x_upper
+            bpy.context.object.rigid_body_constraint.limit_lin_y_upper = scene.rbg_jo_limit_lin_y_upper
+            bpy.context.object.rigid_body_constraint.limit_lin_z_upper = scene.rbg_jo_limit_lin_z_upper
 
-            bpy.context.object.rigid_body_constraint.use_limit_ang_x = self.joint_Angle_limit_x
-            bpy.context.object.rigid_body_constraint.use_limit_ang_y = self.joint_Angle_limit_y
-            bpy.context.object.rigid_body_constraint.use_limit_ang_z = self.joint_Angle_limit_z
-            bpy.context.object.rigid_body_constraint.limit_ang_x_lower = self.joint_Angle_limit_x_lower
-            bpy.context.object.rigid_body_constraint.limit_ang_y_lower = self.joint_Angle_limit_y_lower
-            bpy.context.object.rigid_body_constraint.limit_ang_z_lower = self.joint_Angle_limit_z_lower
-            bpy.context.object.rigid_body_constraint.limit_ang_x_upper = self.joint_Angle_limit_x_upper
-            bpy.context.object.rigid_body_constraint.limit_ang_y_upper = self.joint_Angle_limit_y_upper
-            bpy.context.object.rigid_body_constraint.limit_ang_z_upper = self.joint_Angle_limit_z_upper
+            bpy.context.object.rigid_body_constraint.use_limit_ang_x = scene.rbg_jo_limit_ang_x
+            bpy.context.object.rigid_body_constraint.use_limit_ang_y = scene.rbg_jo_limit_ang_y
+            bpy.context.object.rigid_body_constraint.use_limit_ang_z = scene.rbg_jo_limit_ang_z
+            bpy.context.object.rigid_body_constraint.limit_ang_x_lower = scene.rbg_jo_limit_ang_x_lower
+            bpy.context.object.rigid_body_constraint.limit_ang_y_lower = scene.rbg_jo_limit_ang_y_lower
+            bpy.context.object.rigid_body_constraint.limit_ang_z_lower = scene.rbg_jo_limit_ang_z_lower
+            bpy.context.object.rigid_body_constraint.limit_ang_x_upper = scene.rbg_jo_limit_ang_x_upper
+            bpy.context.object.rigid_body_constraint.limit_ang_y_upper = scene.rbg_jo_limit_ang_y_upper
+            bpy.context.object.rigid_body_constraint.limit_ang_z_upper = scene.rbg_jo_limit_ang_z_upper
 
-            bpy.context.object.rigid_body_constraint.use_spring_x = self.joint_use_spring_x
-            bpy.context.object.rigid_body_constraint.use_spring_y = self.joint_use_spring_y
-            bpy.context.object.rigid_body_constraint.use_spring_z = self.joint_use_spring_z
-            bpy.context.object.rigid_body_constraint.spring_stiffness_x = self.joint_spring_stiffness_x
-            bpy.context.object.rigid_body_constraint.spring_stiffness_y = self.joint_spring_stiffness_y
-            bpy.context.object.rigid_body_constraint.spring_stiffness_z = self.joint_spring_stiffness_z
-            bpy.context.object.rigid_body_constraint.spring_damping_x = self.joint_spring_damping_x
-            bpy.context.object.rigid_body_constraint.spring_damping_y = self.joint_spring_damping_y
-            bpy.context.object.rigid_body_constraint.spring_damping_z = self.joint_spring_damping_z
+            bpy.context.object.rigid_body_constraint.use_spring_x = scene.rbg_jo_use_spring_x
+            bpy.context.object.rigid_body_constraint.use_spring_y = scene.rbg_jo_use_spring_y
+            bpy.context.object.rigid_body_constraint.use_spring_z = scene.rbg_jo_use_spring_z
+            bpy.context.object.rigid_body_constraint.spring_stiffness_x = scene.rbg_jo_spring_stiffness_x
+            bpy.context.object.rigid_body_constraint.spring_stiffness_y = scene.rbg_jo_spring_stiffness_y
+            bpy.context.object.rigid_body_constraint.spring_stiffness_z = scene.rbg_jo_spring_stiffness_z
+            bpy.context.object.rigid_body_constraint.spring_damping_x = scene.rbg_jo_spring_damping_x
+            bpy.context.object.rigid_body_constraint.spring_damping_y = scene.rbg_jo_spring_damping_y
+            bpy.context.object.rigid_body_constraint.spring_damping_z = scene.rbg_jo_spring_damping_z
 
             #parent to armature
-            if self.p_rb_parent_armature == True:
+            if scene.rbg_rc_parent_armature == True:
                 rc.parent = ob
 
         ###clear object select
@@ -857,144 +870,146 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
     #pole_dict = {}
 
     ###instance UProp.rigidbody
-    p_rb_shape = UProp.rb_shape
-    p_rb_dim = UProp.rc_dim
-    p_rb_mass = UProp.rc_mass
-    p_rb_friction = UProp.rc_friction
-    p_rb_bounciness = UProp.rc_bounciness
-    p_rb_translation = UProp.rc_translation
-    p_rb_rotation = UProp.rc_rotation
-    p_rb_add_pole_rootbody = UProp.rc_add_pole_rootbody
-    p_rb_parent_armature = UProp.rc_parent_armature
+    # rbg_rb_shape = UProp.rb_shape
+    # rbg_rc_dim = UProp.rc_dim
+    # rbg_rc_mass = UProp.rc_mass
+    # rbg_rc_friction = UProp.rc_friction
+    # rbg_rc_bounciness = UProp.rc_bounciness
+    # rbg_rc_translation = UProp.rc_translation
+    # rbg_rc_rotation = UProp.rc_rotation
+    # rbg_rc_add_pole_rootbody = UProp.rc_add_pole_rootbody
+    # rbg_rc_parent_armature = UProp.rc_parent_armature
 
-    init_joint_dimX = 0.33
-    init_joint_dimY = 0.33
-    init_joint_dimZ = 0.33
+    init_rbg_jo_dimX = 0.33
+    init_rbg_jo_dimY = 0.33
+    init_rbg_jo_dimZ = 0.33
 
     ###instance UProp.joint
-    joint_type = UProp.jo_type
-    joint_dim = UProp.jo_dim
-    joint_Axis_limit_x = UProp.jo_limit_lin_x
-    joint_Axis_limit_y = UProp.jo_limit_lin_y
-    joint_Axis_limit_z = UProp.jo_limit_lin_z
-    joint_Axis_limit_x_lower = UProp.jo_limit_lin_x_lower
-    joint_Axis_limit_y_lower = UProp.jo_limit_lin_y_lower
-    joint_Axis_limit_z_lower = UProp.jo_limit_lin_z_lower
-    joint_Axis_limit_x_upper = UProp.jo_limit_lin_x_upper
-    joint_Axis_limit_y_upper = UProp.jo_limit_lin_y_upper
-    joint_Axis_limit_z_upper = UProp.jo_limit_lin_z_upper
-    joint_Angle_limit_x = UProp.jo_limit_ang_x
-    joint_Angle_limit_y = UProp.jo_limit_ang_y
-    joint_Angle_limit_z = UProp.jo_limit_ang_z
-    joint_Angle_limit_x_lower = UProp.jo_limit_ang_x_lower
-    joint_Angle_limit_y_lower = UProp.jo_limit_ang_y_lower
-    joint_Angle_limit_z_lower = UProp.jo_limit_ang_z_lower
-    joint_Angle_limit_x_upper = UProp.jo_limit_ang_x_upper
-    joint_Angle_limit_y_upper = UProp.jo_limit_ang_y_upper
-    joint_Angle_limit_z_upper = UProp.jo_limit_ang_z_upper
-    joint_use_spring_x = UProp.jo_use_spring_x
-    joint_use_spring_y = UProp.jo_use_spring_y
-    joint_use_spring_z = UProp.jo_use_spring_z
-    joint_spring_stiffness_x = UProp.jo_spring_stiffness_x
-    joint_spring_stiffness_y = UProp.jo_spring_stiffness_y
-    joint_spring_stiffness_z = UProp.jo_spring_stiffness_z
-    joint_spring_damping_x = UProp.jo_spring_damping_x
-    joint_spring_damping_y = UProp.jo_spring_damping_y
-    joint_spring_damping_z = UProp.jo_spring_damping_z
-    joint_constraint_object = UProp.jo_constraint_object
+    # rbg_jo_type = UProp.jo_type
+    # rbg_jo_dim = UProp.jo_dim
+    # rbg_jo_limit_lin_x = UProp.jo_limit_lin_x
+    # rbg_jo_limit_lin_y = UProp.jo_limit_lin_y
+    # rbg_jo_limit_lin_z = UProp.jo_limit_lin_z
+    # rbg_jo_limit_lin_x_lower = UProp.jo_limit_lin_x_lower
+    # rbg_jo_limit_lin_y_lower = UProp.jo_limit_lin_y_lower
+    # rbg_jo_limit_lin_z_lower = UProp.jo_limit_lin_z_lower
+    # rbg_jo_limit_lin_x_upper = UProp.jo_limit_lin_x_upper
+    # rbg_jo_limit_lin_y_upper = UProp.jo_limit_lin_y_upper
+    # rbg_jo_limit_lin_z_upper = UProp.jo_limit_lin_z_upper
+    # rbg_jo_limit_ang_x = UProp.jo_limit_ang_x
+    # rbg_jo_limit_ang_y = UProp.jo_limit_ang_y
+    # rbg_jo_limit_ang_z = UProp.jo_limit_ang_z
+    # rbg_jo_limit_ang_x_lower = UProp.jo_limit_ang_x_lower
+    # rbg_jo_limit_ang_y_lower = UProp.jo_limit_ang_y_lower
+    # rbg_jo_limit_ang_z_lower = UProp.jo_limit_ang_z_lower
+    # rbg_jo_limit_ang_x_upper = UProp.jo_limit_ang_x_upper
+    # rbg_jo_limit_ang_y_upper = UProp.jo_limit_ang_y_upper
+    # rbg_jo_limit_ang_z_upper = UProp.jo_limit_ang_z_upper
+    # rbg_jo_use_spring_x = UProp.jo_use_spring_x
+    # rbg_jo_use_spring_y = UProp.jo_use_spring_y
+    # rbg_jo_use_spring_z = UProp.jo_use_spring_z
+    # rbg_jo_spring_stiffness_x = UProp.jo_spring_stiffness_x
+    # rbg_jo_spring_stiffness_y = UProp.jo_spring_stiffness_y
+    # rbg_jo_spring_stiffness_z = UProp.jo_spring_stiffness_z
+    # rbg_jo_spring_damping_x = UProp.jo_spring_damping_x
+    # rbg_jo_spring_damping_y = UProp.jo_spring_damping_y
+    # rbg_jo_spring_damping_z = UProp.jo_spring_damping_z
+    # rbg_jo_constraint_object = UProp.jo_constraint_object
 
 
-    def __init__(self):
-
-        self.p_rb_dim = (1, 1, 1)
-        self.joint_dim = (1, 1, 1)
+    # def __init__(self):
+    #
+    #     context.scene.rbg_rc_dim = (1, 1, 1)
+    #     context.scene.rbg_jo_dim = (1, 1, 1)
 
     def draw(self, context):
 
+        scene = context.scene
         ###Rigid Body Object
         layout = self.layout
 
         box = layout.box()
-        box.prop(self, 'p_rb_shape')
-        box.prop(self, 'p_rb_dim')
-        box.prop(self, 'p_rb_mass')
-        box.prop(self, 'p_rb_friction')
-        box.prop(self, 'p_rb_bounciness')
-        box.prop(self, 'p_rb_translation')
-        box.prop(self, 'p_rb_rotation')
+        box.prop(scene, 'rbg_rb_shape')
+        box.prop(scene, 'rbg_rc_dim')
+        box.prop(scene, 'rbg_rc_mass')
+        box.prop(scene, 'rbg_rc_friction')
+        box.prop(scene, 'rbg_rc_bounciness')
+        box.prop(scene, 'rbg_rc_translation')
+        box.prop(scene, 'rbg_rc_rotation')
 
 
         #Joint Object
         layout = self.layout
         box = layout.box()
-        box.prop(self, 'joint_type')
-        box.prop(self, 'joint_constraint_object')
-        box.prop(self, 'p_rb_add_pole_rootbody')
-        box.prop(self, 'p_rb_parent_armature')
-        box.prop(self, 'joint_dim')
+        box.prop(scene, 'rbg_jo_type')
+        box.prop(scene, 'rbg_jo_constraint_object')
+        box.prop(scene, 'rbg_rc_add_pole_rootbody')
+        box.prop(scene, 'rbg_rc_parent_armature')
+        box.prop(scene, 'rbg_jo_dim')
 
         col = box.column(align=True)
         col.label(text="Limits:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Axis_limit_x', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_x_lower')
-        sub.prop(self, 'joint_Axis_limit_x_upper')
+        sub.prop(scene, 'rbg_jo_limit_lin_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_x_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Axis_limit_y', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_y_lower')
-        sub.prop(self, 'joint_Axis_limit_y_upper')
+        sub.prop(scene, 'rbg_jo_limit_lin_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_y_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Axis_limit_z', toggle=True)
-        sub.prop(self, 'joint_Axis_limit_z_lower')
-        sub.prop(self, 'joint_Axis_limit_z_upper')
+        sub.prop(scene, 'rbg_jo_limit_lin_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_z_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Angle_limit_x', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_x_lower')
-        sub.prop(self, 'joint_Angle_limit_x_upper')
+        sub.prop(scene, 'rbg_jo_limit_ang_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_x_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Angle_limit_y', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_y_lower')
-        sub.prop(self, 'joint_Angle_limit_y_upper')
+        sub.prop(scene, 'rbg_jo_limit_ang_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_y_upper')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_Angle_limit_z', toggle=True)
-        sub.prop(self, 'joint_Angle_limit_z_lower')
-        sub.prop(self, 'joint_Angle_limit_z_upper')
+        sub.prop(scene, 'rbg_jo_limit_ang_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_z_upper')
 
         col.label(text="Springs:")
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_use_spring_x', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_x')
-        sub.prop(self, 'joint_spring_damping_x')
+        sub.prop(scene, 'rbg_jo_use_spring_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_x')
+        sub.prop(scene, 'rbg_jo_spring_damping_x')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_use_spring_y', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_y')
-        sub.prop(self, 'joint_spring_damping_y')
+        sub.prop(scene, 'rbg_jo_use_spring_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_y')
+        sub.prop(scene, 'rbg_jo_spring_damping_y')
 
         row = col.row(align=True)
         sub = row.row(align=True)
-        sub.prop(self, 'joint_use_spring_z', toggle=True)
-        sub.prop(self, 'joint_spring_stiffness_z')
-        sub.prop(self, 'joint_spring_damping_z')
+        sub.prop(scene, 'rbg_jo_use_spring_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_z')
+        sub.prop(scene, 'rbg_jo_spring_damping_z')
 
     #
     def execute(self, context):
 
+        scene = context.scene
         add_RigidBody_World()
 
         ###selected Armature
@@ -1036,53 +1051,53 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_joint_dimX * self.joint_dim[0],
-                selected_bones.length * self.init_joint_dimY * self.joint_dim[1],
-                selected_bones.length * self.init_joint_dimZ * self.joint_dim[2]]
+                selected_bones.length * self.init_rbg_jo_dimX * scene.rbg_jo_dim[0],
+                selected_bones.length * self.init_rbg_jo_dimY * scene.rbg_jo_dim[1],
+                selected_bones.length * self.init_rbg_jo_dimZ * scene.rbg_jo_dim[2]]
 
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
             ### Set Rigid Body
             bpy.ops.rigidbody.constraint_add()
-            jc.rigid_body_constraint.type = self.joint_type
+            jc.rigid_body_constraint.type = scene.rbg_jo_type
             jc.rigid_body_constraint.use_breaking = False
             jc.rigid_body_constraint.use_override_solver_iterations = True
             jc.rigid_body_constraint.breaking_threshold = 10
             jc.rigid_body_constraint.solver_iterations = 10
 
-            jc.rigid_body_constraint.use_limit_lin_x = self.joint_Axis_limit_x
-            jc.rigid_body_constraint.use_limit_lin_y = self.joint_Axis_limit_y
-            jc.rigid_body_constraint.use_limit_lin_z = self.joint_Axis_limit_z
-            jc.rigid_body_constraint.limit_lin_x_lower = self.joint_Axis_limit_x_lower
-            jc.rigid_body_constraint.limit_lin_y_lower = self.joint_Axis_limit_y_lower
-            jc.rigid_body_constraint.limit_lin_z_lower = self.joint_Axis_limit_z_lower
-            jc.rigid_body_constraint.limit_lin_x_upper = self.joint_Axis_limit_x_upper
-            jc.rigid_body_constraint.limit_lin_y_upper = self.joint_Axis_limit_y_upper
-            jc.rigid_body_constraint.limit_lin_z_upper = self.joint_Axis_limit_z_upper
+            jc.rigid_body_constraint.use_limit_lin_x = scene.rbg_jo_limit_lin_x
+            jc.rigid_body_constraint.use_limit_lin_y = scene.rbg_jo_limit_lin_y
+            jc.rigid_body_constraint.use_limit_lin_z = scene.rbg_jo_limit_lin_z
+            jc.rigid_body_constraint.limit_lin_x_lower = scene.rbg_jo_limit_lin_x_lower
+            jc.rigid_body_constraint.limit_lin_y_lower = scene.rbg_jo_limit_lin_y_lower
+            jc.rigid_body_constraint.limit_lin_z_lower = scene.rbg_jo_limit_lin_z_lower
+            jc.rigid_body_constraint.limit_lin_x_upper = scene.rbg_jo_limit_lin_x_upper
+            jc.rigid_body_constraint.limit_lin_y_upper = scene.rbg_jo_limit_lin_y_upper
+            jc.rigid_body_constraint.limit_lin_z_upper = scene.rbg_jo_limit_lin_z_upper
 
-            jc.rigid_body_constraint.use_limit_ang_x = self.joint_Angle_limit_x
-            jc.rigid_body_constraint.use_limit_ang_y = self.joint_Angle_limit_y
-            jc.rigid_body_constraint.use_limit_ang_z = self.joint_Angle_limit_z
-            jc.rigid_body_constraint.limit_ang_x_lower = self.joint_Angle_limit_x_lower
-            jc.rigid_body_constraint.limit_ang_y_lower = self.joint_Angle_limit_y_lower
-            jc.rigid_body_constraint.limit_ang_z_lower = self.joint_Angle_limit_z_lower
-            jc.rigid_body_constraint.limit_ang_x_upper = self.joint_Angle_limit_x_upper
-            jc.rigid_body_constraint.limit_ang_y_upper = self.joint_Angle_limit_y_upper
-            jc.rigid_body_constraint.limit_ang_z_upper = self.joint_Angle_limit_z_upper
+            jc.rigid_body_constraint.use_limit_ang_x = scene.rbg_jo_limit_ang_x
+            jc.rigid_body_constraint.use_limit_ang_y = scene.rbg_jo_limit_ang_y
+            jc.rigid_body_constraint.use_limit_ang_z = scene.rbg_jo_limit_ang_z
+            jc.rigid_body_constraint.limit_ang_x_lower = scene.rbg_jo_limit_ang_x_lower
+            jc.rigid_body_constraint.limit_ang_y_lower = scene.rbg_jo_limit_ang_y_lower
+            jc.rigid_body_constraint.limit_ang_z_lower = scene.rbg_jo_limit_ang_z_lower
+            jc.rigid_body_constraint.limit_ang_x_upper = scene.rbg_jo_limit_ang_x_upper
+            jc.rigid_body_constraint.limit_ang_y_upper = scene.rbg_jo_limit_ang_y_upper
+            jc.rigid_body_constraint.limit_ang_z_upper = scene.rbg_jo_limit_ang_z_upper
 
-            jc.rigid_body_constraint.use_spring_x = self.joint_use_spring_x
-            jc.rigid_body_constraint.use_spring_y = self.joint_use_spring_y
-            jc.rigid_body_constraint.use_spring_z = self.joint_use_spring_z
-            jc.rigid_body_constraint.spring_stiffness_x = self.joint_spring_stiffness_x
-            jc.rigid_body_constraint.spring_stiffness_y = self.joint_spring_stiffness_y
-            jc.rigid_body_constraint.spring_stiffness_z = self.joint_spring_stiffness_z
-            jc.rigid_body_constraint.spring_damping_x = self.joint_spring_damping_x
-            jc.rigid_body_constraint.spring_damping_y = self.joint_spring_damping_y
-            jc.rigid_body_constraint.spring_damping_z = self.joint_spring_damping_z
+            jc.rigid_body_constraint.use_spring_x = scene.rbg_jo_use_spring_x
+            jc.rigid_body_constraint.use_spring_y = scene.rbg_jo_use_spring_y
+            jc.rigid_body_constraint.use_spring_z = scene.rbg_jo_use_spring_z
+            jc.rigid_body_constraint.spring_stiffness_x = scene.rbg_jo_spring_stiffness_x
+            jc.rigid_body_constraint.spring_stiffness_y = scene.rbg_jo_spring_stiffness_y
+            jc.rigid_body_constraint.spring_stiffness_z = scene.rbg_jo_spring_stiffness_z
+            jc.rigid_body_constraint.spring_damping_x = scene.rbg_jo_spring_damping_x
+            jc.rigid_body_constraint.spring_damping_y = scene.rbg_jo_spring_damping_y
+            jc.rigid_body_constraint.spring_damping_z = scene.rbg_jo_spring_damping_z
 
             self.report({'INFO'}, "selected_bones.parent:" + str(selected_bones.parent))
-            if selected_bones.parent is not None and selected_bones.parent not in spb and selected_bones.parent not in pole_dict and self.p_rb_add_pole_rootbody == True:
+            if selected_bones.parent is not None and selected_bones.parent not in spb and selected_bones.parent not in pole_dict and scene.rbg_rc_add_pole_rootbody == True:
 
                     ###Create Rigidbody Cube
                     bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.parent.center, rotation=(0.0, 0.0, 0.0))
@@ -1094,9 +1109,9 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
                     ### Rigid Body Dimensions
                     bpy.context.object.dimensions = [
-                        selected_bones.parent.length * self.init_joint_dimX,
-                        selected_bones.parent.length * self.init_joint_dimY,
-                        selected_bones.parent.length * self.init_joint_dimZ]
+                        selected_bones.parent.length * self.init_rbg_jo_dimX,
+                        selected_bones.parent.length * self.init_rbg_jo_dimY,
+                        selected_bones.parent.length * self.init_rbg_jo_dimZ]
 
                     ### Scale Apply
                     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
@@ -1122,13 +1137,13 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
                     bpy.context.scene.update_tag()
 
                     #parent to armature
-                    if self.p_rb_parent_armature == True:
+                    if scene.rbg_rc_parent_armature == True:
                         rc2.parent = ob
 
 
             ###constraint.object1
 
-            if selected_bones.parent is not None and selected_bones.parent not in spb and self.p_rb_add_pole_rootbody == True:
+            if selected_bones.parent is not None and selected_bones.parent not in spb and scene.rbg_rc_add_pole_rootbody == True:
 
                 if selected_bones.parent not in pole_dict:
                     pole_dict[selected_bones.parent] = rc2
@@ -1151,7 +1166,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             #self.report({'INFO'}, "parent_bones_ob:" + str(parent_bones_ob))
 
             #parent to armature
-            if self.p_rb_parent_armature == True:
+            if scene.rbg_rc_parent_armature == True:
                 jc.parent = ob
 
 
@@ -1185,9 +1200,9 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
             ### Rigid Body Dimensions
             bpy.context.object.dimensions = [
-                selected_bones.length * self.init_rc_dimX * self.p_rb_dim[0],
-                selected_bones.length * self.init_rc_dimY * self.p_rb_dim[1],
-                selected_bones.length * self.init_rc_dimZ * self.p_rb_dim[2]]
+                selected_bones.length * self.init_rc_dimX * scene.rbg_rc_dim[0],
+                selected_bones.length * self.init_rc_dimY * scene.rbg_rc_dim[1],
+                selected_bones.length * self.init_rc_dimZ * scene.rbg_rc_dim[2]]
 
             ### Scale Apply
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
@@ -1196,12 +1211,12 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.ops.rigidbody.object_add()
 
             bpy.context.object.rigid_body.type = "ACTIVE"
-            bpy.context.object.rigid_body.collision_shape = self.p_rb_shape
-            bpy.context.object.rigid_body.mass = self.p_rb_mass
-            bpy.context.object.rigid_body.friction = self.p_rb_friction
-            bpy.context.object.rigid_body.restitution = self.p_rb_bounciness
-            bpy.context.object.rigid_body.linear_damping = self.p_rb_translation
-            bpy.context.object.rigid_body.angular_damping = self.p_rb_rotation
+            bpy.context.object.rigid_body.collision_shape = scene.rbg_rb_shape
+            bpy.context.object.rigid_body.mass = scene.rbg_rc_mass
+            bpy.context.object.rigid_body.friction = scene.rbg_rc_friction
+            bpy.context.object.rigid_body.restitution = scene.rbg_rc_bounciness
+            bpy.context.object.rigid_body.linear_damping = scene.rbg_rc_translation
+            bpy.context.object.rigid_body.angular_damping = scene.rbg_rc_rotation
 
             ### Child OF
             bpy.context.view_layer.objects.active = ob
@@ -1223,7 +1238,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.context.scene.update_tag()
 
             #parent to armature
-            if self.p_rb_parent_armature == True:
+            if scene.rbg_rc_parent_armature == True:
                 rc.parent = ob
 
             ###parent none
@@ -1271,9 +1286,11 @@ classes = [
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
+    user_props()
 
 # クラスの登録解除
 def unregister():
+    del_props()
     for cls in classes:
         bpy.utils.unregister_class(cls)
 

@@ -13,6 +13,11 @@ Rigid Body Gen
 ２．生成した剛体のID情報から隣り合う頂点IDから関係性を取得→間が空いた場合難しい。
 
 
+Create Bone to Curves
+  and Weight
+  and RIgidbody
+  and convert mesh
+
 
 ーーーーーーー
 Soft Engine
@@ -78,6 +83,13 @@ NG：Locationリセット
 ●：ジョイントのangle,liner値のプレビュー
 
 ●：風などのForceもうけられるように
+
+ーーーーーーー
+Auto Human Ragdall
+ーーーーーーー
+・Base ボーンを選択したら自動で剛体とジョイントをセットしてくれる。
+・まとめてON/OFFのキーチェックボタン
+
 
 ーーーーーーー
 
@@ -305,3 +317,10 @@ BMedgeの情報はどうやらエディットモード切り替えるとリセ�
 →重複がない頂点はstaticを設定する。
 
 済：端っこのシングル頂点をパッシブセッテにするロジックを追加
+
+soft engineいったん休止。思うような挙動にならない。
+
+-----
+Rigid body の横コンストレイント実装
+
+プロパティまわりのソースリファクタリング
