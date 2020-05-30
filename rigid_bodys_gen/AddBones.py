@@ -49,15 +49,25 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
         mw = object.matrix_world
         self.report({'INFO'}, str(mw))
         
-        for e in bm.edges:
-            if (e.select == True):
+        elist = [e for e in bm.edges if e.select]
+        bonelist = []
+        
+        for e in elist:
+#            if (e.select == True):
 #                print(e)
 #                self.report({'INFO'}, str(e))
 #                self.report({'INFO'}, str(e.verts[0].co))
                 
-                createBones(amt, e.verts, mw)
+                #createBones(amt, e.verts, mw)
+                
+                bone = amt.edit_bones.new('Bone.' + str(e.index))
+                bone.head = mw @ e.verts[0].co
+                bone.tail = mw @ e.verts[1].co
+                
+                bonelist.append([bone.name ,bone.head, bone.tail]) 
                 
         bpy.ops.object.mode_set(mode='OBJECT')
+        self.report({'INFO'}, str(bonelist))
         
 #        for ed in bpy.context.active_object.data.edges:
 #            
