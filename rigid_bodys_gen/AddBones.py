@@ -1,5 +1,6 @@
 import bpy
 import bmesh
+import numpy as np
 
 # show UI
 ### add Tool Panel
@@ -50,7 +51,9 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
         self.report({'INFO'}, str(mw))
         
         elist = [e for e in bm.edges if e.select]
-        bonelist = []
+#        bonelist = np.array([0,0,0])
+#        bonelist = np.array([[0] * 3] * 1)
+        bonelist = np.array([[0,0,0]])
         
         for e in elist:
 #            if (e.select == True):
@@ -64,10 +67,28 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
                 bone.head = mw @ e.verts[0].co
                 bone.tail = mw @ e.verts[1].co
                 
-                bonelist.append([bone.name ,bone.head, bone.tail]) 
+#                self.report({'INFO'}, str(bone.name))
+#                self.report({'INFO'}, str(e.verts[1].index))
+
+                #https://teratail.com/questions/91895
+#                p = int(e.verts[1].index)                
+#                r = np.where(bonelist[:,1] == p)
+#                self.report({'INFO'}, str(r))
+#                bonelist.append([bone.name ,e.verts[0].index ,e.verts[1].index])
+                bonelist = np.append(bonelist, [[bone.name ,e.verts[0].index ,e.verts[1].index]], axis = 0) 
                 
-        bpy.ops.object.mode_set(mode='OBJECT')
+#        bpy.ops.object.mode_set(mode='OBJECT')
         self.report({'INFO'}, str(bonelist))
+        
+        editbones = amt.edit_bones
+        
+        for b in editbones:
+            for b2 in editbones:
+                if b != b2:
+                    if b.head == b2.tail:
+                        b.parent = b2
+                        b.use_connect = True
+
         
 #        for ed in bpy.context.active_object.data.edges:
 #            
