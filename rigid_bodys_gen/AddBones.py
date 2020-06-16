@@ -1,6 +1,27 @@
 import bpy
 import bmesh
 import numpy as np
+from bpy.props import *
+
+
+
+def user_props():
+    scene = bpy.types.Scene
+    
+    scene.addbone_marge_on = BoolProperty(
+        name='MargeBone',
+        description='Marge Bone',
+        default=True,
+        )
+        
+    scene.addbone_marge_count = IntProperty(
+        name='MargeCount',
+        description='Marge Bone Counts',
+#        array_length=10,
+        default=1,
+        min=1,
+        max=10,
+        )
 
 # show UI
 ### add Tool Panel
@@ -21,7 +42,18 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
 
         col = layout.column(align=True)
         col.operator(RBG_OT_AddBonesOnEdges.bl_idname, text="Adding Bones On Edges", icon='BONE_DATA')
+        
+        scene = context.scene
 
+        layout = self.layout
+        box = layout.box()
+        box.prop(scene, 'addbone_marge_on')
+        box.prop(scene, 'addbone_marge_count')
+
+def del_props():
+    scene = bpy.types.Scene
+    del scene.addbone_marge_on
+    del scene.addbone_marge_count
 
 # add bones
 class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
@@ -34,10 +66,11 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
     # def __init__(self):
 
     # def draw(self, context):
-
+        
     ###
     def execute(self, context):
         
+        scene = context.scene
         object = bpy.context.object
         mesh = object.data
         bm = bmesh.from_edit_mesh(mesh)
@@ -89,6 +122,47 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
                         b.parent = b2
                         b.use_connect = True
 
+        if scene.addbone_marge_on:
+            MargeCount = scene.addbone_marge_count
+            bpy.ops.armature.select_all(action='SELECT')
+            elist = [e for e in context.selected_editable_bones if e.select]
+
+            rootbones = []     
+                    
+            for v in elist:
+                if v.parent:
+                    if v.parent.select == False:
+                        rootbones += [v]
+                else:
+                    rootbones += [v]
+                    
+            bpy.ops.armature.select_all(action='DESELECT')
+
+            i = 0
+
+            for bone in rootbones:
+                while bone in elist:
+                    print("bone.name:" + bone.name) 
+                    
+                    i = i + 1
+                         
+                    if bone.children:
+                        bone.select = True
+                        print("children.name:" + bone.children[0].name) 
+                        bone = bone.children[0]
+
+                        if i == MargeCount:
+                            bpy.ops.armature.merge(type='WITHIN_CHAIN')
+                            bpy.ops.armature.select_all(action='DESELECT')
+                            i = 0
+                        
+                    else:
+                        bone.select = True
+                        bpy.ops.armature.merge(type='WITHIN_CHAIN')
+                        i = 0
+                        break
+
+
         
 #        for ed in bpy.context.active_object.data.edges:
 #            
@@ -128,12 +202,14 @@ classes = [
 
 # クラスの登録
 def register():
-     for cls in classes:
+    for cls in classes:
          bpy.utils.register_class(cls)
+    user_props()
 
 # クラスの登録解除
 def unregister():
-     for cls in classes:
+    del_props()
+    for cls in classes:
          bpy.utils.unregister_class(cls)
 
 
