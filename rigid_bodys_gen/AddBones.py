@@ -9,9 +9,15 @@ def user_props():
     scene = bpy.types.Scene
     
     scene.addbone_marge_on = BoolProperty(
-        name='MargeBone',
+        name='Marge Bone',
         description='Marge Bone',
         default=True,
+        )
+    
+    scene.addbone_switch_dir = BoolProperty(
+        name='Bone Direction Flip',
+        description='Bone Direction Flip',
+        default=False,
         )
         
     scene.addbone_marge_count = IntProperty(
@@ -47,6 +53,7 @@ class RBG_PT_MenuAddBonesTools(bpy.types.Panel):
 
         layout = self.layout
         box = layout.box()
+        box.prop(scene, 'addbone_switch_dir')
         box.prop(scene, 'addbone_marge_on')
         box.prop(scene, 'addbone_marge_count')
 
@@ -118,6 +125,19 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
         for b in editbones:
             for b2 in editbones:
                 if b != b2:
+                    if b.tail == b2.tail:
+                        b2.select = True
+                        bpy.ops.armature.switch_direction()
+                        b2.select = False
+        
+        if scene.addbone_switch_dir:
+            bpy.ops.armature.select_all(action='SELECT')
+            bpy.ops.armature.switch_direction()
+            bpy.ops.armature.select_all(action='DESELECT')                
+
+        for b in editbones:
+            for b2 in editbones:
+                if b != b2:                        
                     if b.head == b2.tail:
                         b.parent = b2
                         b.use_connect = True
