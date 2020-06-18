@@ -66,7 +66,7 @@ class RBG_PT_MenuRigidBodyTools(bpy.types.Panel):
 
     def draw(self, context):
         pass
-    
+
 class RBG_PT_Add_Passive(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -82,6 +82,23 @@ class RBG_PT_Add_Passive(bpy.types.Panel):
 
         col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysOnBones.bl_idname, text=bpy.app.translations.pgettext("Add Passive(on bones)"), icon='BONE_DATA')
+
+        scene = context.scene
+
+        layout = self.layout
+        box = layout.box()
+        box.label(text="Options:")
+        box.prop(scene, 'rbg_rb_shape')
+        box.prop(scene, 'rbg_rc_dim')
+        box.prop(scene, 'rbg_rc_mass')
+        box.prop(scene, 'rbg_rc_friction')
+        box.prop(scene, 'rbg_rc_bounciness')
+        box.label(text="Damping:")
+        box.prop(scene, 'rbg_rc_translation')
+        box.prop(scene, 'rbg_rc_rotation')
+        box.prop(scene, 'rbg_rc_rootbody_passive')
+        box.prop(scene, 'rbg_rc_rootbody_animated')
+        box.prop(scene, 'rbg_rc_parent_armature')
 
 class RBG_PT_Add_Active(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
@@ -99,6 +116,20 @@ class RBG_PT_Add_Active(bpy.types.Panel):
         col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysPhysics.bl_idname, text=bpy.app.translations.pgettext("Add Active"), icon='PHYSICS')
 
+        scene = context.scene
+        layout = self.layout
+        box = layout.box()
+        box.label(text="Options:")
+        box.prop(scene, 'rbg_rb_shape')
+        box.prop(scene, 'rbg_rc_dim')
+        box.prop(scene, 'rbg_rc_mass')
+        box.prop(scene, 'rbg_rc_friction')
+        box.prop(scene, 'rbg_rc_bounciness')
+        box.prop(scene, 'rbg_rc_translation')
+        box.prop(scene, 'rbg_rc_rotation')
+        box.prop(scene, 'rbg_rc_rootbody_animated')
+        box.prop(scene, 'rbg_rc_parent_armature')
+
 class RBG_PT_Add_Joints(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -114,6 +145,77 @@ class RBG_PT_Add_Joints(bpy.types.Panel):
 
         col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysJoints.bl_idname, text=bpy.app.translations.pgettext("Add Joints"), icon='RIGID_BODY_CONSTRAINT')
+
+        scene = context.scene
+        layout = self.layout
+        box = layout.box()
+        box.label(text="Options:")
+        box.prop(scene, 'rbg_jo_type')
+        box.prop(scene, 'rbg_jo_dim')
+
+
+        col = box.column(align=True)
+        col.label(text="Limits:")
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_x_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_y_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_z_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_x_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_y_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_z_upper')
+
+
+        col.label(text="Springs:")
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_use_spring_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_x')
+        sub.prop(scene, 'rbg_jo_spring_damping_x')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_use_spring_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_y')
+        sub.prop(scene, 'rbg_jo_spring_damping_y')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_use_spring_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_z')
+        sub.prop(scene, 'rbg_jo_spring_damping_z')
+
+        col.prop(scene, 'rbg_rc_parent_armature')
+        
 
 class RBG_PT_Add_Active_Joints(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
@@ -131,6 +233,88 @@ class RBG_PT_Add_Active_Joints(bpy.types.Panel):
         col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysPhysicsJoints.bl_idname, text=bpy.app.translations.pgettext("Add Active & Joints"), icon='RIGID_BODY')
 
+        scene = context.scene
+        ###Rigid Body Object
+        layout = self.layout
+
+        box = layout.box()
+        box.label(text="Options:")
+        box.prop(scene, 'rbg_rb_shape')
+        box.prop(scene, 'rbg_rc_dim')
+        box.prop(scene, 'rbg_rc_mass')
+        box.prop(scene, 'rbg_rc_friction')
+        box.prop(scene, 'rbg_rc_bounciness')
+        box.prop(scene, 'rbg_rc_translation')
+        box.prop(scene, 'rbg_rc_rotation')
+
+
+        #Joint Object
+        layout = self.layout
+        box = layout.box()
+        box.prop(scene, 'rbg_jo_type')
+        box.prop(scene, 'rbg_jo_constraint_object')
+        box.prop(scene, 'rbg_rc_add_pole_rootbody')
+        box.prop(scene, 'rbg_rc_parent_armature')
+        box.prop(scene, 'rbg_jo_dim')
+
+        col = box.column(align=True)
+        col.label(text="Limits:")
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_x_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_y_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_lin_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_lin_z_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_x_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_x_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_y_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_y_upper')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_limit_ang_z_lower')
+        sub.prop(scene, 'rbg_jo_limit_ang_z_upper')
+
+        col.label(text="Springs:")
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_use_spring_x', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_x')
+        sub.prop(scene, 'rbg_jo_spring_damping_x')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_use_spring_y', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_y')
+        sub.prop(scene, 'rbg_jo_spring_damping_y')
+
+        row = col.row(align=True)
+        sub = row.row(align=True)
+        sub.prop(scene, 'rbg_jo_use_spring_z', toggle=True)
+        sub.prop(scene, 'rbg_jo_spring_stiffness_z')
+        sub.prop(scene, 'rbg_jo_spring_damping_z')
 
 
 ### add MainMenu
@@ -444,40 +628,6 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
     init_rc_dimY = 0.28
     init_rc_dimZ = 1.30
 
-    ###instance UProp.rigidbody
-    # rbg_rb_shape = UProp.rb_shape
-    # rbg_rc_dim = UProp.rc_dim
-    # rbg_rc_mass = UProp.rc_mass
-    # rbg_rc_friction = UProp.rc_friction
-    # rbg_rc_bounciness = UProp.rc_bounciness
-    # rbg_rc_translation = UProp.rc_translation
-    # rbg_rc_rotation = UProp.rc_rotation
-    # rbg_rc_rootbody_passive = UProp.rc_rootbody_passive
-    # rbg_rc_rootbody_animated = UProp.rc_rootbody_animated
-    # rbg_rc_parent_armature = UProp.rc_parent_armature
-
-
-    # def __init__(self):
-    #
-    #     context.scene.rbg_rc_dim = (1, 1, 1)
-
-    def draw(self, context):
-
-        scene = context.scene
-
-        layout = self.layout
-        box = layout.box()
-        box.prop(scene, 'rbg_rb_shape')
-        box.prop(scene, 'rbg_rc_dim')
-        box.prop(scene, 'rbg_rc_mass')
-        box.prop(scene, 'rbg_rc_friction')
-        box.prop(scene, 'rbg_rc_bounciness')
-        box.label(text="Damping:")
-        box.prop(scene, 'rbg_rc_translation')
-        box.prop(scene, 'rbg_rc_rotation')
-        box.prop(scene, 'rbg_rc_rootbody_passive')
-        box.prop(scene, 'rbg_rc_rootbody_animated')
-        box.prop(scene, 'rbg_rc_parent_armature')
 
     ###
     def execute(self, context):
@@ -583,36 +733,6 @@ class RBG_OT_CreateRigidBodysPhysics(bpy.types.Operator):
     init_rc_dimY = 0.28
     init_rc_dimZ = 1.30
 
-    ###instance UProp.rigidbody
-    # rbg_rb_shape = UProp.rb_shape
-    # rbg_rc_dim = UProp.rc_dim
-    # rbg_rc_mass = UProp.rc_mass
-    # rbg_rc_friction = UProp.rc_friction
-    # rbg_rc_bounciness = UProp.rc_bounciness
-    # rbg_rc_translation = UProp.rc_translation
-    # rbg_rc_rotation = UProp.rc_rotation
-    # #rbg_rc_rootbody_passive = UProp.rc_rootbody_passive
-    # rbg_rc_rootbody_animated = UProp.rc_rootbody_animated
-    # rbg_rc_parent_armature = UProp.rc_parent_armature
-
-    # def __init__(self):
-    #
-    #     context.scene.rbg_rc_dim = (1, 1, 1)
-
-    def draw(self, context):
-
-        scene = context.scene
-        layout = self.layout
-        box = layout.box()
-        box.prop(scene, 'rbg_rb_shape')
-        box.prop(scene, 'rbg_rc_dim')
-        box.prop(scene, 'rbg_rc_mass')
-        box.prop(scene, 'rbg_rc_friction')
-        box.prop(scene, 'rbg_rc_bounciness')
-        box.prop(scene, 'rbg_rc_translation')
-        box.prop(scene, 'rbg_rc_rotation')
-        box.prop(scene, 'rbg_rc_rootbody_animated')
-        box.prop(scene, 'rbg_rc_parent_armature')
 
     ###
     def execute(self, context):
@@ -720,113 +840,6 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
     init_rbg_jo_dimY = 0.33
     init_rbg_jo_dimZ = 0.33
 
-    ###instance UProp.joint
-    # rbg_jo_type = UProp.jo_type
-    # rbg_jo_dim = UProp.jo_dim
-    # rbg_jo_limit_lin_x = UProp.jo_limit_lin_x
-    # rbg_jo_limit_lin_y = UProp.jo_limit_lin_y
-    # rbg_jo_limit_lin_z = UProp.jo_limit_lin_z
-    # rbg_jo_limit_lin_x_lower = UProp.jo_limit_lin_x_lower
-    # rbg_jo_limit_lin_y_lower = UProp.jo_limit_lin_y_lower
-    # rbg_jo_limit_lin_z_lower = UProp.jo_limit_lin_z_lower
-    # rbg_jo_limit_lin_x_upper = UProp.jo_limit_lin_x_upper
-    # rbg_jo_limit_lin_y_upper = UProp.jo_limit_lin_y_upper
-    # rbg_jo_limit_lin_z_upper = UProp.jo_limit_lin_z_upper
-    # rbg_jo_limit_ang_x = UProp.jo_limit_ang_x
-    # rbg_jo_limit_ang_y = UProp.jo_limit_ang_y
-    # rbg_jo_limit_ang_z = UProp.jo_limit_ang_z
-    # rbg_jo_limit_ang_x_lower = UProp.jo_limit_ang_x_lower
-    # rbg_jo_limit_ang_y_lower = UProp.jo_limit_ang_y_lower
-    # rbg_jo_limit_ang_z_lower = UProp.jo_limit_ang_z_lower
-    # rbg_jo_limit_ang_x_upper = UProp.jo_limit_ang_x_upper
-    # rbg_jo_limit_ang_y_upper = UProp.jo_limit_ang_y_upper
-    # rbg_jo_limit_ang_z_upper = UProp.jo_limit_ang_z_upper
-    # rbg_jo_use_spring_x = UProp.jo_use_spring_x
-    # rbg_jo_use_spring_y = UProp.jo_use_spring_y
-    # rbg_jo_use_spring_z = UProp.jo_use_spring_z
-    # rbg_jo_spring_stiffness_x = UProp.jo_spring_stiffness_x
-    # rbg_jo_spring_stiffness_y = UProp.jo_spring_stiffness_y
-    # rbg_jo_spring_stiffness_z = UProp.jo_spring_stiffness_z
-    # rbg_jo_spring_damping_x = UProp.jo_spring_damping_x
-    # rbg_jo_spring_damping_y = UProp.jo_spring_damping_y
-    # rbg_jo_spring_damping_z = UProp.jo_spring_damping_z
-    # rbg_rc_parent_armature = UProp.rc_parent_armature
-
-    # def __init__(self):
-    #
-    #     context.scene.rbg_jo_dim = (1, 1, 1)
-
-    def draw(self, context):
-
-        scene = context.scene
-        layout = self.layout
-        box = layout.box()
-        box.prop(scene, 'rbg_jo_type')
-        box.prop(scene, 'rbg_jo_dim')
-
-
-        col = box.column(align=True)
-        col.label(text="Limits:")
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_x', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_x_lower')
-        sub.prop(scene, 'rbg_jo_limit_lin_x_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_y', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_y_lower')
-        sub.prop(scene, 'rbg_jo_limit_lin_y_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_z', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_z_lower')
-        sub.prop(scene, 'rbg_jo_limit_lin_z_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_x', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_x_lower')
-        sub.prop(scene, 'rbg_jo_limit_ang_x_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_y', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_y_lower')
-        sub.prop(scene, 'rbg_jo_limit_ang_y_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_z', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_z_lower')
-        sub.prop(scene, 'rbg_jo_limit_ang_z_upper')
-
-
-        col.label(text="Springs:")
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_use_spring_x', toggle=True)
-        sub.prop(scene, 'rbg_jo_spring_stiffness_x')
-        sub.prop(scene, 'rbg_jo_spring_damping_x')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_use_spring_y', toggle=True)
-        sub.prop(scene, 'rbg_jo_spring_stiffness_y')
-        sub.prop(scene, 'rbg_jo_spring_damping_y')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_use_spring_z', toggle=True)
-        sub.prop(scene, 'rbg_jo_spring_stiffness_z')
-        sub.prop(scene, 'rbg_jo_spring_damping_z')
-
-        col.prop(scene, 'rbg_rc_parent_armature')
-
 
     ###
     def execute(self, context):
@@ -846,7 +859,9 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
             #self.report({'INFO'}, str(selected_bones.vector[0]))
 
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.head, rotation=(0.0, 0.0, 0.0))
+            # bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.head, rotation=(0.0, 0.0, 0.0))
+            bpy.ops.object.posemode_toggle()
+            bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.1, align='WORLD', location=selected_bones.head)
             rc = bpy.context.active_object
             rc.name = "joint." + selected_bones.name
             viewport_display(self, rc)
@@ -906,7 +921,7 @@ class RBG_OT_CreateRigidBodysJoints(bpy.types.Operator):
 
         ###clear object select
         bpy.context.view_layer.objects.active = ob
-        bpy.ops.object.posemode_toggle()
+        # bpy.ops.object.posemode_toggle()
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.posemode_toggle()
         bpy.ops.pose.select_all(action='DESELECT')
@@ -926,144 +941,9 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
     init_rc_dimY = 0.28
     init_rc_dimZ = 1.30
 
-    #pole_dict = {}
-
-    ###instance UProp.rigidbody
-    # rbg_rb_shape = UProp.rb_shape
-    # rbg_rc_dim = UProp.rc_dim
-    # rbg_rc_mass = UProp.rc_mass
-    # rbg_rc_friction = UProp.rc_friction
-    # rbg_rc_bounciness = UProp.rc_bounciness
-    # rbg_rc_translation = UProp.rc_translation
-    # rbg_rc_rotation = UProp.rc_rotation
-    # rbg_rc_add_pole_rootbody = UProp.rc_add_pole_rootbody
-    # rbg_rc_parent_armature = UProp.rc_parent_armature
-
     init_rbg_jo_dimX = 0.33
     init_rbg_jo_dimY = 0.33
     init_rbg_jo_dimZ = 0.33
-
-    ###instance UProp.joint
-    # rbg_jo_type = UProp.jo_type
-    # rbg_jo_dim = UProp.jo_dim
-    # rbg_jo_limit_lin_x = UProp.jo_limit_lin_x
-    # rbg_jo_limit_lin_y = UProp.jo_limit_lin_y
-    # rbg_jo_limit_lin_z = UProp.jo_limit_lin_z
-    # rbg_jo_limit_lin_x_lower = UProp.jo_limit_lin_x_lower
-    # rbg_jo_limit_lin_y_lower = UProp.jo_limit_lin_y_lower
-    # rbg_jo_limit_lin_z_lower = UProp.jo_limit_lin_z_lower
-    # rbg_jo_limit_lin_x_upper = UProp.jo_limit_lin_x_upper
-    # rbg_jo_limit_lin_y_upper = UProp.jo_limit_lin_y_upper
-    # rbg_jo_limit_lin_z_upper = UProp.jo_limit_lin_z_upper
-    # rbg_jo_limit_ang_x = UProp.jo_limit_ang_x
-    # rbg_jo_limit_ang_y = UProp.jo_limit_ang_y
-    # rbg_jo_limit_ang_z = UProp.jo_limit_ang_z
-    # rbg_jo_limit_ang_x_lower = UProp.jo_limit_ang_x_lower
-    # rbg_jo_limit_ang_y_lower = UProp.jo_limit_ang_y_lower
-    # rbg_jo_limit_ang_z_lower = UProp.jo_limit_ang_z_lower
-    # rbg_jo_limit_ang_x_upper = UProp.jo_limit_ang_x_upper
-    # rbg_jo_limit_ang_y_upper = UProp.jo_limit_ang_y_upper
-    # rbg_jo_limit_ang_z_upper = UProp.jo_limit_ang_z_upper
-    # rbg_jo_use_spring_x = UProp.jo_use_spring_x
-    # rbg_jo_use_spring_y = UProp.jo_use_spring_y
-    # rbg_jo_use_spring_z = UProp.jo_use_spring_z
-    # rbg_jo_spring_stiffness_x = UProp.jo_spring_stiffness_x
-    # rbg_jo_spring_stiffness_y = UProp.jo_spring_stiffness_y
-    # rbg_jo_spring_stiffness_z = UProp.jo_spring_stiffness_z
-    # rbg_jo_spring_damping_x = UProp.jo_spring_damping_x
-    # rbg_jo_spring_damping_y = UProp.jo_spring_damping_y
-    # rbg_jo_spring_damping_z = UProp.jo_spring_damping_z
-    # rbg_jo_constraint_object = UProp.jo_constraint_object
-
-
-    # def __init__(self):
-    #
-    #     context.scene.rbg_rc_dim = (1, 1, 1)
-    #     context.scene.rbg_jo_dim = (1, 1, 1)
-
-    def draw(self, context):
-
-        scene = context.scene
-        ###Rigid Body Object
-        layout = self.layout
-
-        box = layout.box()
-        box.prop(scene, 'rbg_rb_shape')
-        box.prop(scene, 'rbg_rc_dim')
-        box.prop(scene, 'rbg_rc_mass')
-        box.prop(scene, 'rbg_rc_friction')
-        box.prop(scene, 'rbg_rc_bounciness')
-        box.prop(scene, 'rbg_rc_translation')
-        box.prop(scene, 'rbg_rc_rotation')
-
-
-        #Joint Object
-        layout = self.layout
-        box = layout.box()
-        box.prop(scene, 'rbg_jo_type')
-        box.prop(scene, 'rbg_jo_constraint_object')
-        box.prop(scene, 'rbg_rc_add_pole_rootbody')
-        box.prop(scene, 'rbg_rc_parent_armature')
-        box.prop(scene, 'rbg_jo_dim')
-
-        col = box.column(align=True)
-        col.label(text="Limits:")
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_x', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_x_lower')
-        sub.prop(scene, 'rbg_jo_limit_lin_x_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_y', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_y_lower')
-        sub.prop(scene, 'rbg_jo_limit_lin_y_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_z', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_lin_z_lower')
-        sub.prop(scene, 'rbg_jo_limit_lin_z_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_x', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_x_lower')
-        sub.prop(scene, 'rbg_jo_limit_ang_x_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_y', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_y_lower')
-        sub.prop(scene, 'rbg_jo_limit_ang_y_upper')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_z', toggle=True)
-        sub.prop(scene, 'rbg_jo_limit_ang_z_lower')
-        sub.prop(scene, 'rbg_jo_limit_ang_z_upper')
-
-        col.label(text="Springs:")
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_use_spring_x', toggle=True)
-        sub.prop(scene, 'rbg_jo_spring_stiffness_x')
-        sub.prop(scene, 'rbg_jo_spring_damping_x')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_use_spring_y', toggle=True)
-        sub.prop(scene, 'rbg_jo_spring_stiffness_y')
-        sub.prop(scene, 'rbg_jo_spring_damping_y')
-
-        row = col.row(align=True)
-        sub = row.row(align=True)
-        sub.prop(scene, 'rbg_jo_use_spring_z', toggle=True)
-        sub.prop(scene, 'rbg_jo_spring_stiffness_z')
-        sub.prop(scene, 'rbg_jo_spring_damping_z')
 
     #
     def execute(self, context):
@@ -1101,7 +981,9 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
             ###Joint Session
             ###Create Rigidbody Cube
-            bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.head, rotation=(0.0, 0.0, 0.0))
+            # bpy.ops.mesh.primitive_cube_add(size=1.0, calc_uvs=False, enter_editmode=False, align='WORLD', location=selected_bones.head, rotation=(0.0, 0.0, 0.0))
+            bpy.ops.object.posemode_toggle()
+            bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.1, align='WORLD', location=selected_bones.head)
             jc = bpy.context.active_object
             jc.name = "joint." + ob.name + "." + selected_bones.name
             viewport_display(self, jc)
@@ -1277,8 +1159,11 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.context.object.rigid_body.linear_damping = scene.rbg_rc_translation
             bpy.context.object.rigid_body.angular_damping = scene.rbg_rc_rotation
 
+
+            bpy.ops.object.posemode_toggle()
             ### Child OF
             bpy.context.view_layer.objects.active = ob
+            bpy.ops.object.posemode_toggle()
             bpy.ops.pose.armature_apply()
             #bpy.ops.pose.visual_transform_apply()
             bpy.ops.pose.select_all(action='DESELECT')
