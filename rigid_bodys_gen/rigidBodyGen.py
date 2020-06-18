@@ -56,7 +56,7 @@ class RBG_PT_MenuRigidBodyTools(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Rigid Body Gen"
-    bl_context = "posemode"
+    bl_context = ".posemode"
     bl_label = "Make Rigid Body Tools"
 
 
@@ -65,13 +65,72 @@ class RBG_PT_MenuRigidBodyTools(bpy.types.Panel):
         return (context.object is not None)
 
     def draw(self, context):
+        pass
+    
+class RBG_PT_Add_Passive(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Rigid Body Gen"
+    bl_context = ".posemode"
+    bl_label = "Add Passive(on bones)"
+    bl_parent_id = "RBG_PT_MenuRigidBodyTools"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw(self, context):
         layout = self.layout
 
         col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysOnBones.bl_idname, text=bpy.app.translations.pgettext("Add Passive(on bones)"), icon='BONE_DATA')
+
+class RBG_PT_Add_Active(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Rigid Body Gen"
+    bl_context = ".posemode"
+    bl_label = "Add Active"
+    bl_parent_id = "RBG_PT_MenuRigidBodyTools"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysPhysics.bl_idname, text=bpy.app.translations.pgettext("Add Active"), icon='PHYSICS')
+
+class RBG_PT_Add_Joints(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Rigid Body Gen"
+    bl_context = ".posemode"
+    bl_label = "Add Joints"
+    bl_parent_id = "RBG_PT_MenuRigidBodyTools"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysJoints.bl_idname, text=bpy.app.translations.pgettext("Add Joints"), icon='RIGID_BODY_CONSTRAINT')
+
+class RBG_PT_Add_Active_Joints(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Rigid Body Gen"
+    bl_context = ".posemode"
+    bl_label = "Add Active & Joints"
+    bl_parent_id = "RBG_PT_MenuRigidBodyTools"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         col.operator(RBG_OT_CreateRigidBodysPhysicsJoints.bl_idname, text=bpy.app.translations.pgettext("Add Active & Joints"), icon='RIGID_BODY')
+
 
 
 ### add MainMenu
@@ -1275,6 +1334,10 @@ def add_RigidBody_World():
 
 classes = [
     RBG_PT_MenuRigidBodyTools,
+    RBG_PT_Add_Passive,
+    RBG_PT_Add_Active,
+    RBG_PT_Add_Joints,
+    RBG_PT_Add_Active_Joints,
     RBG_MT_MenuRigidBodys,
     RBG_OT_CreateRigidBodysOnBones,
     RBG_OT_CreateRigidBodysPhysics,
