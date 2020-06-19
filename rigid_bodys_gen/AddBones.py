@@ -173,12 +173,18 @@ class RBG_OT_AddBonesOnEdges(bpy.types.Operator):
 
                         if i == MargeCount:
                             bpy.ops.armature.merge(type='WITHIN_CHAIN')
+                            if bpy.context.selected_editable_bones[0].parent:
+                                bpy.context.selected_editable_bones[0].use_connect = True
                             bpy.ops.armature.select_all(action='DESELECT')
                             i = 0
 
                     else:
                         bone.select = True
-                        bpy.ops.armature.merge(type='WITHIN_CHAIN')
+                        if i > 1:
+                            bpy.ops.armature.merge(type='WITHIN_CHAIN')
+                            self.report({'INFO'}, str( bpy.context.selected_bones))
+                            if bpy.context.selected_editable_bones[0].parent:
+                                bpy.context.selected_editable_bones[0].use_connect = True
                         i = 0
                         break
 
