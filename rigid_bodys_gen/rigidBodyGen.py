@@ -636,11 +636,18 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
 
         ###selected Armature
         ob = bpy.context.active_object
+        newCollectionName = 'RBGcollection.' + ob.name
 
         ### Apply Object transform
         bpy.ops.object.posemode_toggle()
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.object.posemode_toggle()
+
+        ### create collection
+        if bpy.data.collections.get(newCollectionName) is None:
+            newcollection = bpy.data.collections.new(newCollectionName)
+            bpy.context.scene.collection.children.link(newcollection)
+
 
         if len(bpy.context.selected_pose_bones) == 0:
             return {'FINISHED'}
@@ -655,6 +662,9 @@ class RBG_OT_CreateRigidBodysOnBones(bpy.types.Operator):
             viewport_display(self, rc)
             rc.show_in_front = True
             rc.hide_render = True
+
+            ### link to collection
+            bpy.data.collections[newCollectionName].objects.link(rc)
 
             ###Damped Track
             bpy.ops.object.constraint_add(type='DAMPED_TRACK')
