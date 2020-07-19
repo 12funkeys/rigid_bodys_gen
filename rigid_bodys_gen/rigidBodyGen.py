@@ -1,5 +1,7 @@
 import bpy
+import time, sys
 from bpy.props import *
+
 
 bl_info = {
     "name": "rigid bodys gen",
@@ -963,7 +965,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
         ###selected Armature
         ob = bpy.context.active_object
-        self.report({'INFO'}, "ob:" + str(ob))
+#        self.report({'INFO'}, "ob:" + str(ob))
 
         ### Apply Object transform
         bpy.ops.object.posemode_toggle()
@@ -978,16 +980,16 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
         spb = bpy.context.selected_pose_bones
         tot = len(spb)
-        wm.progress_begin(0, tot)
+#        wm.progress_begin(0, tot)
         i = 0
 
-        self.report({'INFO'}, "pole_dict:" + str(pole_dict))
+#        self.report({'INFO'}, "pole_dict:" + str(pole_dict))
 
         for selected_bones in spb:
             #self.report({'INFO'}, str(selected_bones.vector[0]))
 
             i += 1
-            wm.progress_update(i)
+#            wm.progress_update(i)
 
             ###Joint Session
             ###Create Rigidbody Cube
@@ -1047,7 +1049,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             jc.rigid_body_constraint.spring_damping_y = scene.rbg_jo_spring_damping_y
             jc.rigid_body_constraint.spring_damping_z = scene.rbg_jo_spring_damping_z
 
-            self.report({'INFO'}, "selected_bones.parent:" + str(selected_bones.parent))
+#            self.report({'INFO'}, "selected_bones.parent:" + str(selected_bones.parent))
             if selected_bones.parent is not None and selected_bones.parent not in spb and selected_bones.parent not in pole_dict and scene.rbg_rc_add_pole_rootbody == True:
 
                     ###Create Rigidbody Cube
@@ -1098,7 +1100,7 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
 
                 if selected_bones.parent not in pole_dict:
                     pole_dict[selected_bones.parent] = rc2
-                    self.report({'INFO'}, "pole_dict:" + str(pole_dict))
+#                    self.report({'INFO'}, "pole_dict:" + str(pole_dict))
                     jc.rigid_body_constraint.object1 = rc2
                     parent_bones_ob = "rbg." + ob.name + "." + selected_bones.name
                 else:
@@ -1199,6 +1201,8 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
             bpy.ops.object.editmode_toggle()
             bpy.context.active_bone.parent = None
             bpy.ops.object.posemode_toggle()
+            
+            update_progress("Rigidbody_gen Progress", i/tot)
 
         ###clear object select
         bpy.context.view_layer.objects.active = ob
@@ -1207,9 +1211,10 @@ class RBG_OT_CreateRigidBodysPhysicsJoints(bpy.types.Operator):
         bpy.ops.object.posemode_toggle()
         bpy.ops.pose.select_all(action='DESELECT')
 
-        wm.progress_end()
+#        update_progress("Rigidbody_gen:FINISHED", 1)
+#        wm.progress_end()
 
-        self.report({'INFO'}, "OK")
+        self.report({'INFO'}, "FINISHED")
         return {'FINISHED'}
 
 
@@ -1226,6 +1231,13 @@ def add_RigidBody_World():
         if scene.rigidbody_world is None:
             bpy.ops.rigidbody.world_add()
 
+def update_progress(job_title, progress):
+    length = 20 # modify this to change the length
+    block = int(round(length*progress))
+    msg = "\r{0}: [{1}] {2}%".format(job_title, "#"*block + "-"*(length-block), round(progress*100, 2))
+    if progress >= 1: msg += " DONE\r\n"
+    sys.stdout.write(msg)
+    sys.stdout.flush()
 
 classes = [
     RBG_PT_MenuRigidBodyTools,

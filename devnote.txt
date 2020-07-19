@@ -316,13 +316,33 @@ BMedgeの情報はどうやらエディットモード切り替えるとリセ�
 →選択辺の頂点を記録して重複がない頂点のindexリストを作る
 →重複がない頂点はstaticを設定する。
 
-済：端っこのシングル頂点をパッシブセッテにするロジックを追加
+済：端っこのシングル頂点をパッシブ設定にするロジックを追加
 
 soft engineいったん休止。思うような挙動にならない。
 
 -----
-Rigid body の横コンストレイント実装
+Rigid body genou 追加機能
 
-プロパティまわりのソースリファクタリング
-
+●Rigid body の横コンストレイント実装
+済：プロパティまわりのソースリファクタリング
 済：ジョイントをEnptyに変更
+●剛体・ジョイントのcollection追加機能
+  -collectionの選択
+  -collectionのの一括設定変更
+  -collectionの削除
+  -既存collectionへの追加(実行後)
+●名前付けルール
+●Root剛体の生成・設定
+
+collectionの生成
+scripting - What is the Python code related to collection actions for blender 2.8? - Blender Stack Exchange
+https://blender.stackexchange.com/questions/126259/what-is-the-python-code-related-to-collection-actions-for-blender-2-8
+
+Where to find collection_index for moving an object? - Other Topics / Python API - Blender Developer Talk
+https://devtalk.blender.org/t/where-to-find-collection-index-for-moving-an-object/3289
+Instead use collection.objects.link() and collection.objects.unlink() API functions.
+
+y = bpy.data.collections.new('newcollection')
+bpy.context.scene.collection.children.link(y)
+
+bpy.data.collections['Collection 1'].objects.link(ob)
