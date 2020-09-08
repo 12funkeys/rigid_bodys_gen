@@ -5,6 +5,10 @@ Add Rigid bones and Joints on selected bones easily.
 ## Requirements（使用条件）
 * Blender 2.81
 
+##
+Douwnload
+https://github.com/12funkeys/rigid_bodys_gen/releases
+
 ## Functions（機能）
 * Add Passive(on bones)  
 基礎剛体の作成‐ボーン追従
